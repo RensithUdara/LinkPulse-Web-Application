@@ -4094,6 +4094,123 @@ body {
   object-fit: cover;
 }
 
+/* Custom confirmation dialogs */
+.dialog-backdrop {
+  position: fixed;
+  z-index: 100;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  background: rgba(7, 13, 34, 0.48);
+  backdrop-filter: blur(12px);
+}
+
+.confirm-dialog {
+  position: relative;
+  width: min(440px, 100%);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.86);
+  border-radius: 8px;
+  padding: 28px;
+  color: #07133f;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(246, 250, 255, 0.96)),
+    #ffffff;
+  box-shadow: 0 30px 80px rgba(4, 12, 34, 0.28);
+}
+
+.dialog-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+}
+
+.confirm-dialog-icon {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  margin-bottom: 18px;
+  border-radius: 8px;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff4769, #7b3ff2);
+  box-shadow: 0 16px 32px rgba(255, 71, 105, 0.22);
+}
+
+.confirm-dialog h2 {
+  margin: 0;
+  color: #07133f;
+  font-size: 28px;
+  font-weight: 950;
+}
+
+.confirm-dialog-copy {
+  margin: 12px 0 0;
+  color: #52638e;
+  font-size: 15px;
+  font-weight: 650;
+  line-height: 1.55;
+}
+
+.confirm-dialog-copy strong {
+  color: #07133f;
+  font-weight: 950;
+  overflow-wrap: anywhere;
+}
+
+.confirm-dialog-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.confirm-dialog-actions .ghost-button,
+.danger-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 46px;
+  border-radius: 8px;
+  font-weight: 900;
+}
+
+.confirm-dialog-actions .ghost-button {
+  border: 1px solid #dce6f4;
+  color: #07133f;
+  background: #ffffff;
+}
+
+.danger-button {
+  border: 0;
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff365f, #d91f45);
+  box-shadow: 0 16px 32px rgba(217, 31, 69, 0.24);
+}
+
+.dark-mode .confirm-dialog {
+  border-color: rgba(101, 122, 161, 0.32);
+  color: #ffffff;
+  background: #111a33;
+}
+
+.dark-mode .confirm-dialog h2,
+.dark-mode .confirm-dialog-copy strong,
+.dark-mode .confirm-dialog-actions .ghost-button {
+  color: #ffffff;
+}
+
+.dark-mode .confirm-dialog-copy {
+  color: #aab7d0;
+}
+
+.dark-mode .confirm-dialog-actions .ghost-button {
+  border-color: rgba(101, 122, 161, 0.32);
+  background: #101a32;
+}
+
 /* Exact Profile screen pass */
 .page-header-account {
   min-height: 150px;
