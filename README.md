@@ -18,6 +18,7 @@ docker compose up --build
 ```
 
 The API runs on `http://localhost:8080`.
+The React frontend runs on `http://localhost:5173`.
 
 ## Local Development
 
@@ -33,10 +34,25 @@ Run the API:
 go run ./cmd/server
 ```
 
+Run the frontend:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
 Run tests:
 
 ```bash
 go test ./...
+```
+
+Build the frontend:
+
+```bash
+cd frontend
+npm run build
 ```
 
 ## API
