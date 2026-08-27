@@ -1,5 +1,6 @@
 import { FormEvent, MouseEvent, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  ArrowRight,
   BarChart3,
   CalendarClock,
   ChevronRight,
@@ -36,6 +37,7 @@ import {
   UserPlus,
   UserRound,
   Users,
+  Wifi,
   X,
   Zap,
 } from 'lucide-react';
@@ -462,6 +464,13 @@ function PageHeader({
           <span />
           <span />
         </div>
+      ) : page === 'account' ? (
+        <div className="account-header-art" aria-hidden="true">
+          <UserRound size={64} />
+          <span>
+            <Settings size={34} />
+          </span>
+        </div>
       ) : (
         <div className="page-header-art" aria-hidden="true">
           {icons[page]}
@@ -750,14 +759,8 @@ function AccountPage({
 }) {
   return (
     <div className="account-page">
-      <section className="account-hero panel">
-        <div>
-          <p className="eyebrow">Security profile</p>
-          <h2>{email}</h2>
-        </div>
-        <ShieldCheck size={54} />
-      </section>
-      <AccountPanel token={token} email={email} user={user} onChanged={onChanged} onError={onError} />
+      <AccountInfoPanel email={email} user={user} />
+      <AccountPanel token={token} onChanged={onChanged} onError={onError} />
     </div>
   );
 }
@@ -1068,16 +1071,51 @@ function CompactLink({ item, favorite }: { item: ShortURL; favorite: boolean }) 
   );
 }
 
+function AccountInfoPanel({ email, user }: { email: string; user: User | null }) {
+  return (
+    <section className="panel profile-info-panel">
+      <div className="account-section-heading">
+        <span>
+          <UserRound size={28} />
+        </span>
+        <div>
+          <h2>Account Information</h2>
+          <p>Your account details and profile information.</p>
+        </div>
+      </div>
+
+      <div className="profile-email-card">
+        <span className="profile-avatar">{avatarInitial(email)}</span>
+        <div>
+          <p>Email address</p>
+          <strong>{email}</strong>
+          {user?.created_at && <small>Joined {formatFullDate(user.created_at)}</small>}
+        </div>
+        <em>
+          <i />
+          Active
+        </em>
+      </div>
+
+      <div className="backend-card">
+        <span>
+          <Wifi size={30} />
+        </span>
+        <div>
+          <strong>Backend connected</strong>
+          <p>Your application is connected to the backend server.</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function AccountPanel({
   token,
-  email,
-  user,
   onChanged,
   onError,
 }: {
   token: string;
-  email: string;
-  user: User | null;
   onChanged: () => void;
   onError: (error: unknown) => void;
 }) {
@@ -1110,22 +1148,14 @@ function AccountPanel({
   }
 
   return (
-    <section className="panel account-panel">
-      <div className="panel-heading vibrant">
+    <section className="panel account-panel password-panel">
+      <div className="account-section-heading">
+        <span>
+          <Lock size={27} />
+        </span>
         <div>
-          <p className="eyebrow">Account</p>
-          <h2>{email}</h2>
-        </div>
-        <ShieldPlus size={22} />
-      </div>
-      <div className="account-meta">
-        <div>
-          <span>User ID</span>
-          <strong>{user?.id ?? 'Loading'}</strong>
-        </div>
-        <div>
-          <span>Joined</span>
-          <strong>{user?.created_at ? formatFullDate(user.created_at) : 'Loading'}</strong>
+          <h2>Change Password</h2>
+          <p>Update your password to keep your account secure.</p>
         </div>
       </div>
       <form className="security-form" onSubmit={submit}>
@@ -1185,6 +1215,7 @@ function AccountPanel({
         <button className="primary-button full" type="submit" disabled={saving}>
           <ShieldPlus size={17} />
           {saving ? 'Saving' : 'Change password'}
+          <ArrowRight size={20} />
         </button>
       </form>
     </section>
