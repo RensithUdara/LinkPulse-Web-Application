@@ -53,7 +53,7 @@ func (s *Server) routes() *gin.Engine {
 	} else {
 		_ = router.SetTrustedProxies(nil)
 	}
-	router.Use(cors())
+	router.Use(cors(s.cfg.FrontendOrigin))
 	router.Use(middleware.RateLimit(s.cache, s.cfg.RateLimitPerMin))
 
 	userRepo := repository.NewUserRepository(s.db)
@@ -99,11 +99,18 @@ func (s *Server) routes() *gin.Engine {
 	return router
 }
 
-func cors() gin.HandlerFunc {
+func cors(frontendOrigin string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		c.Header("Access-Control-Allow-Origin", "*")
+		origin := c.GetHeader("Origin")
+		if origin == frontendOrigin || frontendOrigin == "*" {
+			c.Header("Access-Control-Allow-Origin", origin)
+		} else if origin == "" {
+			c.Header("Access-Control-Allow-Origin", frontendOrigin)
+		}
+		c.Header("Vary", "Origin")
 		c.Header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
-		c.Header("Access-Control-Allow-Headers", "Authorization, Content-Type")
+		c.Header("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept")
+		c.Header("Access-Control-Max-Age", "86400")
 
 		if c.Request.Method == http.MethodOptions {
 			c.AbortWithStatus(http.StatusNoContent)
