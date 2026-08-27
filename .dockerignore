@@ -1,0 +1,10 @@
+.git
+.env
+server.exe
+
+frontend/node_modules
+frontend/dist
+
+bin
+dist
+coverage.out
