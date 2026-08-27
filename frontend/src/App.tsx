@@ -1407,8 +1407,16 @@ function HeroArt() {
 }
 
 function MiniTimeline({ data }: { data: { date: string; count: number }[] }) {
-  const max = Math.max(1, ...data.map((item) => item.count));
-  const rows = data.length ? data : Array.from({ length: 14 }, (_, index) => ({ date: String(index), count: 0 }));
+  const rows = normalizeTimeline(data);
+  const max = Math.max(1, ...rows.map((item) => item.count));
+  const points = rows.map((item, index) => {
+    const x = rows.length === 1 ? 450 : 22 + (index / (rows.length - 1)) * 856;
+    const y = 140 - (item.count / max) * 108;
+    return { ...item, x, y };
+  });
+  const line = points.map((point) => `${point.x},${point.y}`).join(' ');
+  const area = `22,150 ${line} 878,150`;
+  const labelEvery = Math.max(1, Math.floor(points.length / 5));
 
   return (
     <div className="timeline">
@@ -1416,10 +1424,40 @@ function MiniTimeline({ data }: { data: { date: string; count: number }[] }) {
         <span>Clicks over time</span>
         <span>30 days</span>
       </div>
-      <div className="timeline-bars">
-        {rows.map((item) => (
-          <span key={item.date} style={{ height: `${Math.max(8, (item.count / max) * 100)}%` }} title={`${item.date}: ${item.count}`} />
-        ))}
+      <div className="timeline-chart">
+        <svg viewBox="0 0 900 166" role="img" aria-label="Clicks over time graph" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="timelineStroke" x1="0" x2="1" y1="0" y2="0">
+              <stop offset="0%" stopColor="#176bff" />
+              <stop offset="100%" stopColor="#7b3ff2" />
+            </linearGradient>
+            <linearGradient id="timelineFill" x1="0" x2="0" y1="0" y2="1">
+              <stop offset="0%" stopColor="#176bff" stopOpacity="0.18" />
+              <stop offset="100%" stopColor="#7b3ff2" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          {[32, 68, 104, 140].map((y) => (
+            <line className="chart-grid" key={`h-${y}`} x1="22" x2="878" y1={y} y2={y} />
+          ))}
+          {[22, 236, 450, 664, 878].map((x) => (
+            <line className="chart-grid" key={`v-${x}`} x1={x} x2={x} y1="20" y2="150" />
+          ))}
+          <polygon className="chart-area" points={area} />
+          <polyline className="chart-line" points={line} />
+          {points.map((point) => (
+            <circle className="chart-point" key={point.date} cx={point.x} cy={point.y} r="4.5">
+              <title>{`${point.date}: ${point.count} clicks`}</title>
+            </circle>
+          ))}
+        </svg>
+        <div className="timeline-labels">
+          {points
+            .filter((_, index) => index % labelEvery === 0)
+            .slice(0, 5)
+            .map((point) => (
+              <span key={`label-${point.date}`}>{formatTimelineLabel(point.date)}</span>
+            ))}
+        </div>
       </div>
     </div>
   );
@@ -1493,6 +1531,23 @@ function formatDate(value: string) {
 
 function formatFullDate(value: string) {
   return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(value));
+}
+
+function normalizeTimeline(data: { date: string; count: number }[]) {
+  if (data.length) return data.slice(-30);
+
+  const today = new Date();
+  return Array.from({ length: 14 }, (_, index) => {
+    const date = new Date(today);
+    date.setDate(today.getDate() - (13 - index));
+    return { date: date.toISOString(), count: 0 };
+  });
+}
+
+function formatTimelineLabel(value: string) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return new Intl.DateTimeFormat(undefined, { month: 'short', day: '2-digit' }).format(date);
 }
 
 function relativeTime(value: string) {
