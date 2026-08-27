@@ -3140,6 +3140,48 @@ body {
   }
 }
 
+/* Hard fix: analytics selector must stay two rows */
+.analytics-selector .mini-link-list button .analytics-link-copy {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+  min-width: 0;
+}
+
+.analytics-selector .mini-link-list button .analytics-link-copy b {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  overflow: hidden;
+  color: #176bff;
+  font-size: 15px;
+  font-weight: 950;
+  line-height: 1.2;
+}
+
+.analytics-selector .mini-link-list button .analytics-link-copy small {
+  flex: 0 0 auto;
+  color: #546790;
+  font-size: 12px;
+  font-weight: 760;
+  white-space: nowrap;
+}
+
+.analytics-selector .mini-link-list button .analytics-link-copy em {
+  display: block !important;
+  min-width: 0;
+  overflow: hidden;
+  color: #60719c;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 650;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* Exact Links screen pass */
 .page-header-links {
   min-height: 134px;
@@ -3994,4 +4036,46 @@ body {
   .analytics-header-art {
     display: none;
   }
+}
+
+/* Final cascade lock: analytics selector item layout */
+.analytics-selector .mini-link-list button {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  padding: 12px 16px 12px 42px !important;
+}
+
+.analytics-selector .mini-link-list button .analytics-link-copy {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 6px !important;
+  min-width: 0 !important;
+}
+
+.analytics-selector .mini-link-list button .analytics-link-copy b {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 10px !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+}
+
+.analytics-selector .mini-link-list button .analytics-link-copy small {
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+}
+
+.analytics-selector .mini-link-list button .analytics-link-copy em {
+  display: block !important;
+  grid-row: 2 !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.analytics-selector .mini-link-list button > strong {
+  display: none !important;
 }
