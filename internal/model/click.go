@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type Click struct {
@@ -19,7 +20,7 @@ type Click struct {
 	CreatedAt time.Time `gorm:"index" json:"created_at"`
 }
 
-func (c *Click) BeforeCreate(_ interface{}) error {
+func (c *Click) BeforeCreate(_ *gorm.DB) error {
 	if c.ID == uuid.Nil {
 		c.ID = uuid.New()
 	}
