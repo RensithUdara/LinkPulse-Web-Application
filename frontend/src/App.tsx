@@ -707,8 +707,10 @@ function AnalyticsPage({
           {visibleURLs.length ? (
             visibleURLs.map((item) => (
               <button className={selectedURL?.id === item.id ? 'active' : ''} key={item.id} type="button" onClick={() => onSelect(item.id)}>
-                <span className={favoriteIds.includes(item.id) ? 'favorite-dot' : ''}>{item.short_code}</span>
-                <em>{item.original_url}</em>
+                <span className={`analytics-link-copy ${favoriteIds.includes(item.id) ? 'favorite-dot' : ''}`}>
+                  <b>{item.short_code}</b>
+                  <em>{item.original_url}</em>
+                </span>
                 <strong>{item.click_count} clicks</strong>
               </button>
             ))
@@ -1299,20 +1301,43 @@ function AnalyticsCategoryRows({
 }: {
   rows: { title: string; icon: ReactNode; data: { label: string; count: number }[] }[];
 }) {
+  const [openRows, setOpenRows] = useState<string[]>([]);
+
+  function toggle(title: string) {
+    setOpenRows((current) => (current.includes(title) ? current.filter((item) => item !== title) : [...current, title]));
+  }
+
   return (
     <div className="analytics-breakdown">
       {rows.map((row) => {
         const total = row.data.reduce((sum, item) => sum + item.count, 0);
         const top = row.data.find((item) => item.label);
+        const isOpen = openRows.includes(row.title);
         return (
-          <button className="analytics-breakdown-row" key={row.title} type="button">
+          <div className={`analytics-breakdown-item ${isOpen ? 'open' : ''}`} key={row.title}>
+            <button className="analytics-breakdown-row" type="button" onClick={() => toggle(row.title)}>
             <span className="breakdown-icon">{row.icon}</span>
             <span>
               <strong>{row.title}</strong>
               <em>{total ? `${top?.label ?? 'Unknown'} · ${total} click${total === 1 ? '' : 's'}` : 'No clicks yet'}</em>
             </span>
-            <ChevronRight size={22} />
-          </button>
+              {isOpen ? <ChevronDown size={22} /> : <ChevronRight size={22} />}
+            </button>
+            {isOpen && (
+              <div className="analytics-breakdown-detail">
+                {row.data.length ? (
+                  row.data.slice(0, 5).map((item) => (
+                    <div key={`${row.title}-${item.label || 'unknown'}`}>
+                      <span>{item.label || 'Unknown'}</span>
+                      <strong>{item.count}</strong>
+                    </div>
+                  ))
+                ) : (
+                  <p>No analytics data yet</p>
+                )}
+              </div>
+            )}
+          </div>
         );
       })}
     </div>
