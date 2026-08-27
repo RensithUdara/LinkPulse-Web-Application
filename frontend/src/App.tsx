@@ -2,6 +2,7 @@ import { FormEvent, MouseEvent, ReactNode, useCallback, useEffect, useMemo, useS
 import {
   BarChart3,
   CalendarClock,
+  ChevronRight,
   ChevronDown,
   Check,
   Copy,
@@ -16,8 +17,10 @@ import {
   List,
   Lock,
   LogOut,
+  MapPin,
   MoreVertical,
   Moon,
+  Monitor,
   MousePointerClick,
   Plus,
   QrCode,
@@ -453,6 +456,12 @@ function PageHeader({
             Clear expired
           </button>
         </div>
+      ) : page === 'analytics' ? (
+        <div className="analytics-header-art" aria-hidden="true">
+          <span />
+          <span />
+          <span />
+        </div>
       ) : (
         <div className="page-header-art" aria-hidden="true">
           {icons[page]}
@@ -674,6 +683,13 @@ function AnalyticsPage({
   onToggleFavorite: (id: string) => void;
   onCopied: () => void;
 }) {
+  const [analyticsQuery, setAnalyticsQuery] = useState('');
+  const visibleURLs = urls.filter((item) => {
+    const needle = analyticsQuery.toLowerCase().trim();
+    if (!needle) return true;
+    return item.short_code.toLowerCase().includes(needle) || item.original_url.toLowerCase().includes(needle);
+  });
+
   return (
     <div className="analytics-page">
       <section className="panel analytics-selector">
@@ -683,14 +699,16 @@ function AnalyticsPage({
             <h2>Select link</h2>
           </div>
         </div>
+        <label className="analytics-search">
+          <Search size={18} />
+          <input value={analyticsQuery} onChange={(event) => setAnalyticsQuery(event.target.value)} placeholder="Search your links..." />
+        </label>
         <div className="mini-link-list">
-          {urls.length ? (
-            urls.map((item) => (
+          {visibleURLs.length ? (
+            visibleURLs.map((item) => (
               <button className={selectedURL?.id === item.id ? 'active' : ''} key={item.id} type="button" onClick={() => onSelect(item.id)}>
-                <span>
-                  {favoriteIds.includes(item.id) && <Star size={14} />}
-                  {item.short_code}
-                </span>
+                <span className={favoriteIds.includes(item.id) ? 'favorite-dot' : ''}>{item.short_code}</span>
+                <em>{item.original_url}</em>
                 <strong>{item.click_count} clicks</strong>
               </button>
             ))
@@ -1259,16 +1277,45 @@ function AnalyticsPanel({ analytics, selectedURL }: { analytics: Analytics | nul
         <BarChart3 size={22} />
       </div>
       <div className="stats-grid">
-        <Stat label="Total clicks" value={analytics?.total_clicks ?? 0} tone="teal" />
-        <Stat label="Unique visitors" value={analytics?.unique_visitors ?? 0} tone="amber" />
+        <Stat label="Total clicks" value={analytics?.total_clicks ?? 0} tone="teal" icon={<MousePointerClick size={22} />} />
+        <Stat label="Unique visitors" value={analytics?.unique_visitors ?? 0} tone="amber" icon={<UserRound size={22} />} />
       </div>
       <MiniTimeline data={analytics?.clicks_by_day ?? []} />
-      <GroupedBars title="Devices" data={analytics?.devices ?? []} />
-      <GroupedBars title="Browsers" data={analytics?.browsers ?? []} />
-      <GroupedBars title="Countries" data={analytics?.countries ?? []} />
-      <GroupedBars title="Operating systems" data={analytics?.operating_systems ?? []} />
-      <GroupedBars title="Referrers" data={analytics?.referrers ?? []} />
+      <AnalyticsCategoryRows
+        rows={[
+          { title: 'Devices', icon: <Monitor size={25} />, data: analytics?.devices ?? [] },
+          { title: 'Browsers', icon: <Globe2 size={25} />, data: analytics?.browsers ?? [] },
+          { title: 'Countries', icon: <MapPin size={25} />, data: analytics?.countries ?? [] },
+          { title: 'Operating systems', icon: <Settings size={25} />, data: analytics?.operating_systems ?? [] },
+          { title: 'Referrers', icon: <Link2 size={25} />, data: analytics?.referrers ?? [] },
+        ]}
+      />
     </section>
+  );
+}
+
+function AnalyticsCategoryRows({
+  rows,
+}: {
+  rows: { title: string; icon: ReactNode; data: { label: string; count: number }[] }[];
+}) {
+  return (
+    <div className="analytics-breakdown">
+      {rows.map((row) => {
+        const total = row.data.reduce((sum, item) => sum + item.count, 0);
+        const top = row.data.find((item) => item.label);
+        return (
+          <button className="analytics-breakdown-row" key={row.title} type="button">
+            <span className="breakdown-icon">{row.icon}</span>
+            <span>
+              <strong>{row.title}</strong>
+              <em>{total ? `${top?.label ?? 'Unknown'} · ${total} click${total === 1 ? '' : 's'}` : 'No clicks yet'}</em>
+            </span>
+            <ChevronRight size={22} />
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
