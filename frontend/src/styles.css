@@ -3638,11 +3638,10 @@ body {
 
 .analytics-selector .mini-link-list button {
   position: relative;
-  grid-template-columns: minmax(0, 1fr) auto;
-  column-gap: 14px;
-  min-height: 74px;
+  grid-template-columns: 1fr;
+  min-height: 72px;
   margin: 0 0 0 0;
-  padding: 13px 18px 13px 48px;
+  padding: 12px 16px 12px 42px;
   border-left: 4px solid transparent;
   border-bottom: 0;
   background: #ffffff;
@@ -3654,14 +3653,15 @@ body {
 }
 
 .analytics-link-copy {
-  display: block;
+  display: grid;
+  gap: 6px;
   min-width: 0;
 }
 
 .analytics-selector .mini-link-list button .analytics-link-copy::before {
   position: absolute;
-  left: 22px;
-  top: 27px;
+  left: 20px;
+  top: 21px;
   width: 12px;
   height: 12px;
   border-radius: 999px;
@@ -3675,22 +3675,30 @@ body {
 }
 
 .analytics-link-copy b {
-  display: block;
-  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   color: #176bff;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 950;
   line-height: 1.2;
-  text-overflow: ellipsis;
+}
+
+.analytics-link-copy small {
+  flex: 0 0 auto;
+  color: #546790;
+  font-size: 12px;
+  font-weight: 760;
   white-space: nowrap;
 }
 
 .analytics-link-copy em {
   display: block;
   overflow: hidden;
-  margin-top: 6px;
+  margin-top: 0;
   color: #60719c;
-  font-size: 13px;
+  font-size: 12px;
   font-style: normal;
   font-weight: 650;
   text-overflow: ellipsis;
@@ -3698,14 +3706,7 @@ body {
 }
 
 .analytics-selector .mini-link-list button strong {
-  align-self: start;
-  color: #536591;
-  font-size: 14px;
-  font-weight: 760;
-  max-width: 76px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  display: none;
 }
 
 .analytics-panel {
