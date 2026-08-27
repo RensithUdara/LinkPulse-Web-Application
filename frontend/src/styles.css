@@ -4080,6 +4080,20 @@ body {
   display: none !important;
 }
 
+/* Brand logo image */
+.brand-mark {
+  overflow: hidden;
+  padding: 0;
+  background: transparent;
+}
+
+.brand-mark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* Exact Profile screen pass */
 .page-header-account {
   min-height: 150px;
