@@ -708,10 +708,12 @@ function AnalyticsPage({
             visibleURLs.map((item) => (
               <button className={selectedURL?.id === item.id ? 'active' : ''} key={item.id} type="button" onClick={() => onSelect(item.id)}>
                 <span className={`analytics-link-copy ${favoriteIds.includes(item.id) ? 'favorite-dot' : ''}`}>
-                  <b>{item.short_code}</b>
+                  <b>
+                    {item.short_code}
+                    <small>{item.click_count} clicks</small>
+                  </b>
                   <em>{item.original_url}</em>
                 </span>
-                <strong>{item.click_count} clicks</strong>
               </button>
             ))
           ) : (
