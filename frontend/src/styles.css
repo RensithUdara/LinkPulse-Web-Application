@@ -5315,3 +5315,142 @@ body {
     min-height: 50px;
   }
 }
+
+/* Global 90% content scale + auth overlap fix */
+.app-shell,
+.auth-layout {
+  transform: scale(0.9);
+  transform-origin: top left;
+  width: 111.111%;
+  min-height: 111.111vh;
+}
+
+.auth-layout {
+  height: 111.111vh;
+  max-height: none;
+}
+
+.auth-visual {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto auto;
+  row-gap: 24px;
+  height: 111.111vh;
+  max-height: none;
+  min-height: 720px;
+  padding: 42px 66px 34px;
+}
+
+.auth-brand {
+  grid-row: 1;
+}
+
+.auth-copy {
+  grid-row: 2;
+  align-self: center;
+  margin: 0;
+  max-width: 700px;
+}
+
+.auth-copy h1 {
+  font-size: clamp(48px, 3.8vw, 58px);
+  line-height: 1.04;
+}
+
+.auth-copy p {
+  max-width: 620px;
+  margin-top: 22px;
+  font-size: 21px;
+  line-height: 1.32;
+}
+
+.auth-feature-list {
+  grid-row: 3;
+  gap: 14px;
+  margin: 0;
+}
+
+.auth-feature {
+  gap: 18px;
+}
+
+.auth-feature > span {
+  width: 56px;
+  height: 56px;
+}
+
+.auth-feature strong {
+  font-size: 18px;
+}
+
+.auth-feature p {
+  font-size: 15px;
+}
+
+.auth-footer-line {
+  grid-row: 4;
+  margin: 0;
+  padding-top: 6px;
+}
+
+.auth-card {
+  height: 111.111vh;
+  max-height: none;
+}
+
+.auth-form-card {
+  max-height: calc(111.111vh - 48px);
+}
+
+@media (max-width: 1200px) {
+  .app-shell,
+  .auth-layout {
+    transform: none;
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  .auth-layout,
+  .auth-visual,
+  .auth-card {
+    height: auto;
+    max-height: none;
+  }
+
+  .auth-visual {
+    min-height: auto;
+  }
+}
+
+@media (max-height: 820px) and (min-width: 1201px) {
+  .auth-visual {
+    row-gap: 14px;
+    padding-top: 30px;
+    padding-bottom: 24px;
+  }
+
+  .auth-copy h1 {
+    font-size: clamp(42px, 3.2vw, 50px);
+  }
+
+  .auth-copy p {
+    margin-top: 16px;
+    font-size: 18px;
+  }
+
+  .auth-feature-list {
+    gap: 10px;
+  }
+
+  .auth-feature > span {
+    width: 50px;
+    height: 50px;
+  }
+
+  .auth-feature strong {
+    font-size: 16px;
+  }
+
+  .auth-feature p {
+    font-size: 14px;
+  }
+}
