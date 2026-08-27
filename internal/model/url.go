@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type URL struct {
@@ -19,7 +20,7 @@ type URL struct {
 	ExpiresAt   *time.Time `json:"expires_at,omitempty"`
 }
 
-func (u *URL) BeforeCreate(_ interface{}) error {
+func (u *URL) BeforeCreate(_ *gorm.DB) error {
 	if u.ID == uuid.Nil {
 		u.ID = uuid.New()
 	}
