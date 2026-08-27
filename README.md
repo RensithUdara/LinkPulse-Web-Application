@@ -91,6 +91,26 @@ Content-Type: application/json
 
 Both auth endpoints return a JWT token.
 
+### Current User
+
+```http
+GET /api/auth/me
+Authorization: Bearer <token>
+```
+
+### Change Password
+
+```http
+PUT /api/auth/password
+Authorization: Bearer <token>
+Content-Type: application/json
+
+{
+  "current_password": "password123",
+  "new_password": "newpassword123"
+}
+```
+
 ### Create Short URL
 
 ```http
