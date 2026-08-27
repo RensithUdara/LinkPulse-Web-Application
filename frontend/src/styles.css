@@ -2281,3 +2281,222 @@ select:focus {
     display: none;
   }
 }
+
+/* Professional typography and final polish */
+:root {
+  --title: #07133f;
+  --copy: #536591;
+}
+
+body {
+  color: var(--title);
+  -webkit-font-smoothing: antialiased;
+}
+
+.brand strong,
+.nav-item,
+.command-actions .ghost-button,
+.user-chip,
+.primary-button,
+.ghost-button,
+.soft-button,
+.segmented button {
+  letter-spacing: 0;
+}
+
+.brand strong {
+  font-weight: 950;
+}
+
+.brand span {
+  font-weight: 760;
+}
+
+.page-header h1,
+.page-header-overview h1,
+.hero-copy h2 {
+  color: var(--title);
+  font-weight: 950;
+  letter-spacing: 0;
+}
+
+.page-header .eyebrow,
+.page-header-overview .eyebrow,
+.hero-copy .eyebrow,
+.panel-heading .eyebrow,
+.create-heading p,
+.metric-card p,
+label {
+  font-weight: 850;
+}
+
+.page-header-overview .eyebrow {
+  margin-bottom: 8px;
+  color: #536591;
+  font-size: 12px;
+}
+
+.page-header-overview h1 {
+  font-size: 40px;
+  line-height: 1.04;
+}
+
+.page-header-overview span {
+  color: #536591;
+  font-size: 17px;
+  font-weight: 760;
+}
+
+.hero-copy h2 {
+  color: #ffffff;
+  font-size: 42px;
+  font-weight: 950;
+}
+
+.hero-copy .eyebrow {
+  color: #ffffff;
+  font-weight: 900;
+}
+
+.hero-copy h2::after {
+  max-width: 620px;
+  font-size: 18px;
+  font-weight: 650;
+}
+
+.metric-card p {
+  color: #64739d;
+  font-size: 13px;
+}
+
+.metric-card strong {
+  color: var(--title);
+  font-size: 31px;
+  font-weight: 950;
+}
+
+.metric-value b {
+  font-weight: 950;
+}
+
+.panel-heading:not(.vibrant) h2,
+.create-heading h2 {
+  color: var(--title);
+  font-size: 20px;
+  font-weight: 950;
+}
+
+.create-heading p {
+  color: #536591;
+  font-size: 15px;
+}
+
+.create-options {
+  color: #102154;
+}
+
+input::placeholder {
+  color: #8b9abd;
+}
+
+input,
+select {
+  color: #102154;
+  font-weight: 720;
+}
+
+.compact-link strong {
+  color: #0968ff;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.compact-link span:not(.dot) {
+  color: #536591;
+  font-size: 15px;
+  font-weight: 760;
+}
+
+.mini-heading {
+  color: #132152;
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.stat span {
+  font-weight: 950;
+}
+
+.stat strong {
+  color: var(--title);
+  font-weight: 950;
+}
+
+.command-bar,
+.page-header,
+.hero-panel,
+.metric-card,
+.create-panel,
+.panel {
+  border-radius: 8px;
+}
+
+.command-actions .ghost-button:hover,
+.create-options:hover {
+  color: #135fff;
+  border-color: rgba(49, 88, 255, 0.28);
+}
+
+.danger-lite:hover {
+  color: #d91f45 !important;
+  border-color: #ffc6d2 !important;
+}
+
+.page-header:not(.page-header-overview) {
+  min-height: 118px;
+}
+
+.page-header:not(.page-header-overview) h1 {
+  font-size: 36px;
+}
+
+.page-header:not(.page-header-overview) span {
+  font-weight: 760;
+}
+
+.dark-mode {
+  --title: #eef4ff;
+  --copy: #aab7d0;
+}
+
+.dark-mode .page-header-overview span,
+.dark-mode .page-header-overview .eyebrow,
+.dark-mode .metric-card p,
+.dark-mode .create-heading p,
+.dark-mode .compact-link span:not(.dot) {
+  color: #aab7d0;
+}
+
+.dark-mode .compact-link,
+.dark-mode .detail-list div,
+.dark-mode .account-meta div,
+.dark-mode .panel-heading:not(.vibrant) {
+  background: #111a33;
+}
+
+.dark-mode .stat span,
+.dark-mode .mini-heading,
+.dark-mode input,
+.dark-mode select,
+.dark-mode .user-chip,
+.dark-mode .global-search svg,
+.dark-mode .input-shell svg {
+  color: #eef4ff;
+}
+
+@media (max-width: 900px) {
+  .page-header-overview h1,
+  .hero-copy h2 {
+    font-size: 34px;
+  }
+}
