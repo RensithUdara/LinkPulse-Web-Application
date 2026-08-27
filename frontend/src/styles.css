@@ -4526,3 +4526,57 @@ body {
     width: fit-content;
   }
 }
+
+/* Profile navigation chip + account logout button */
+.command-bar .user-chip {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 0 10px 0 0;
+  background: transparent;
+  box-shadow: none;
+  outline: none;
+}
+
+.command-bar .user-chip:hover {
+  background: #f3f7ff;
+  border-color: #dbe6f5;
+  transform: translateY(-1px);
+}
+
+.command-bar .user-chip:focus-visible {
+  border-color: #176bff;
+  box-shadow: 0 0 0 3px rgba(23, 107, 255, 0.16);
+}
+
+.profile-logout-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 46px;
+  margin: 0 24px 24px;
+  border: 1px solid #ffd0da;
+  border-radius: 8px;
+  padding: 0 18px;
+  color: #d91f45;
+  background: #fff6f8;
+  box-shadow: 0 12px 24px rgba(217, 31, 69, 0.08);
+  font-weight: 900;
+}
+
+.profile-logout-button:hover {
+  color: #ffffff;
+  background: linear-gradient(135deg, #ff365f, #d91f45);
+  transform: translateY(-1px);
+}
+
+.dark-mode .command-bar .user-chip:hover {
+  border-color: rgba(101, 122, 161, 0.32);
+  background: #101a32;
+}
+
+.dark-mode .profile-logout-button {
+  border-color: rgba(255, 88, 120, 0.3);
+  color: #ff8da2;
+  background: rgba(255, 54, 95, 0.12);
+}
