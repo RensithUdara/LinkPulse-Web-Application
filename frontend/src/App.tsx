@@ -11,7 +11,6 @@ import {
   ExternalLink,
   FileDown,
   Filter,
-  Gauge,
   Globe2,
   Home,
   Link2,
@@ -243,7 +242,6 @@ export default function App() {
             token={token}
             summary={summary}
             recentURLs={recentURLs}
-            selectedURL={selectedURL}
             analytics={analytics}
             onCreated={async (message) => {
               setNotice({ type: 'success', text: message });
@@ -427,7 +425,6 @@ function OverviewPage({
   token,
   summary,
   recentURLs,
-  selectedURL,
   analytics,
   onCreated,
   onError,
@@ -438,7 +435,6 @@ function OverviewPage({
   token: string;
   summary: ReturnType<typeof buildSummary>;
   recentURLs: ShortURL[];
-  selectedURL?: ShortURL;
   analytics: Analytics | null;
   onCreated: (message: string) => void;
   onError: (error: unknown) => void;
