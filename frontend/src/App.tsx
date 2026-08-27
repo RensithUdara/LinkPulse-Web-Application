@@ -230,7 +230,7 @@ export default function App() {
           onExport={exportCSV}
           onDeleteExpired={deleteExpiredLinks}
           onToggleTheme={() => setDarkMode((current) => !current)}
-          onLogout={() => setShowLogoutDialog(true)}
+          onProfile={() => setPage('account')}
           canExport={urls.length > 0}
           canDeleteExpired={summary.expiredLinks > 0}
         />
@@ -311,6 +311,7 @@ export default function App() {
             token={token}
             email={email}
             user={user}
+            onLogout={() => setShowLogoutDialog(true)}
             onChanged={() => setNotice({ type: 'success', text: 'Password changed' })}
             onError={showError}
           />
@@ -355,7 +356,7 @@ function CommandBar({
   onExport,
   onDeleteExpired,
   onToggleTheme,
-  onLogout,
+  onProfile,
 }: {
   loading: boolean;
   query: string;
@@ -368,7 +369,7 @@ function CommandBar({
   onExport: () => void;
   onDeleteExpired: () => void;
   onToggleTheme: () => void;
-  onLogout: () => void;
+  onProfile: () => void;
 }) {
   return (
     <header className="command-bar">
@@ -403,7 +404,7 @@ function CommandBar({
         >
           <Moon size={19} />
         </button>
-        <button className="user-chip" type="button" title={email} onClick={onLogout}>
+        <button className="user-chip" type="button" title="Open profile" onClick={onProfile}>
           <span className="avatar">{avatarInitial(email)}</span>
           <strong>{emailName(email)}</strong>
           <ChevronDown size={17} />
@@ -847,18 +848,20 @@ function AccountPage({
   token,
   email,
   user,
+  onLogout,
   onChanged,
   onError,
 }: {
   token: string;
   email: string;
   user: User | null;
+  onLogout: () => void;
   onChanged: () => void;
   onError: (error: unknown) => void;
 }) {
   return (
     <div className="account-page">
-      <AccountInfoPanel email={email} user={user} />
+      <AccountInfoPanel email={email} user={user} onLogout={onLogout} />
       <AccountPanel token={token} onChanged={onChanged} onError={onError} />
     </div>
   );
@@ -1185,7 +1188,7 @@ function CompactLink({ item, favorite }: { item: ShortURL; favorite: boolean }) 
   );
 }
 
-function AccountInfoPanel({ email, user }: { email: string; user: User | null }) {
+function AccountInfoPanel({ email, user, onLogout }: { email: string; user: User | null; onLogout: () => void }) {
   return (
     <section className="panel profile-info-panel">
       <div className="account-section-heading">
@@ -1220,6 +1223,11 @@ function AccountInfoPanel({ email, user }: { email: string; user: User | null })
           <p>Your application is connected to the backend server.</p>
         </div>
       </div>
+
+      <button className="profile-logout-button" type="button" onClick={onLogout}>
+        <LogOut size={18} />
+        Logout
+      </button>
     </section>
   );
 }
