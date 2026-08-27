@@ -2962,3 +2962,180 @@ body {
     font-size: 34px;
   }
 }
+
+/* Strong title and premium contrast upgrade */
+:root {
+  --title: #061238;
+  --title-deep: #030a26;
+  --copy: #4b5f91;
+}
+
+body {
+  background:
+    linear-gradient(135deg, #eaf5ff 0%, #f8fbff 34%, #eef4ff 100%),
+    #f7fbff;
+}
+
+.page-header-overview {
+  position: relative;
+  padding-left: 2px;
+}
+
+.page-header-overview::before {
+  position: absolute;
+  left: -14px;
+  top: 24px;
+  width: 5px;
+  height: 54px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #176bff, #7b3ff2);
+  content: "";
+}
+
+.page-header-overview .eyebrow {
+  color: #43598d;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.page-header-overview h1 {
+  color: var(--title-deep);
+  font-size: 44px;
+  font-weight: 950;
+  line-height: 0.96;
+  text-shadow: 0 10px 26px rgba(8, 20, 63, 0.1);
+}
+
+.page-header-overview span {
+  color: #4f6397;
+  font-size: 18px;
+  font-weight: 720;
+}
+
+.page-header:not(.page-header-overview) h1 {
+  color: var(--title-deep);
+  font-size: 42px;
+  font-weight: 950;
+}
+
+.hero-panel {
+  min-height: 330px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  background:
+    linear-gradient(132deg, #075df4 0%, #1b74ff 43%, #8255f8 100%),
+    #176bff;
+  box-shadow:
+    0 24px 56px rgba(27, 83, 212, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.24);
+}
+
+.hero-copy .eyebrow {
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.hero-copy h2 {
+  max-width: 760px;
+  font-size: 48px;
+  font-weight: 950;
+  line-height: 1.04;
+  text-shadow: 0 16px 34px rgba(2, 14, 56, 0.2);
+}
+
+.hero-copy h2::after {
+  margin-top: 12px;
+  font-size: 19px;
+  font-weight: 700;
+  text-shadow: none;
+}
+
+.hero-actions .primary-button,
+.hero-actions .soft-button {
+  min-height: 46px;
+  padding: 0 20px;
+  font-size: 16px;
+  font-weight: 850;
+}
+
+.hero-actions .primary-button {
+  color: #075df4;
+}
+
+.hero-actions .soft-button {
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.55);
+}
+
+.metric-card {
+  background:
+    linear-gradient(180deg, #ffffff 0%, #fbfdff 100%),
+    #ffffff;
+  box-shadow:
+    0 18px 38px rgba(17, 31, 63, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+}
+
+.metric-card p {
+  color: #5d6f9e;
+  font-weight: 800;
+}
+
+.metric-card strong {
+  color: var(--title-deep);
+  font-size: 34px;
+  font-weight: 950;
+}
+
+.metric-value b {
+  font-weight: 950;
+}
+
+.create-heading h2,
+.panel-heading:not(.vibrant) h2,
+.overview-grid .panel-heading.vibrant h2 {
+  color: var(--title-deep);
+  font-size: 24px;
+  font-weight: 950;
+}
+
+.create-heading p {
+  color: #4d6095;
+  font-weight: 720;
+}
+
+.compact-link strong {
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.stat strong {
+  font-size: 34px;
+  font-weight: 950;
+}
+
+.stat span,
+.mini-heading,
+.command-actions .ghost-button,
+.primary-button {
+  font-weight: 900;
+}
+
+.dark-mode .page-header-overview h1,
+.dark-mode .page-header:not(.page-header-overview) h1,
+.dark-mode .create-heading h2,
+.dark-mode .panel-heading:not(.vibrant) h2,
+.dark-mode .overview-grid .panel-heading.vibrant h2,
+.dark-mode .metric-card strong,
+.dark-mode .stat strong {
+  color: #ffffff;
+}
+
+@media (max-width: 900px) {
+  .page-header-overview h1 {
+    font-size: 38px;
+  }
+
+  .hero-copy h2 {
+    font-size: 38px;
+  }
+}
