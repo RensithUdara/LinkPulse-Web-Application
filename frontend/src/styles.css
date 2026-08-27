@@ -3639,6 +3639,7 @@ body {
 .analytics-selector .mini-link-list button {
   position: relative;
   grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 14px;
   min-height: 74px;
   margin: 0 0 0 0;
   padding: 13px 18px 13px 48px;
@@ -3652,7 +3653,12 @@ body {
   background: linear-gradient(90deg, rgba(222, 241, 255, 0.95), rgba(247, 251, 255, 0.9));
 }
 
-.analytics-selector .mini-link-list button span::before {
+.analytics-link-copy {
+  display: block;
+  min-width: 0;
+}
+
+.analytics-selector .mini-link-list button .analytics-link-copy::before {
   position: absolute;
   left: 22px;
   top: 27px;
@@ -3663,18 +3669,23 @@ body {
   content: "";
 }
 
-.analytics-selector .mini-link-list button span.favorite-dot::before,
-.analytics-selector .mini-link-list button.active span::before {
+.analytics-selector .mini-link-list button .analytics-link-copy.favorite-dot::before,
+.analytics-selector .mini-link-list button.active .analytics-link-copy::before {
   background: #55c914;
 }
 
-.analytics-selector .mini-link-list button span {
+.analytics-link-copy b {
+  display: block;
+  overflow: hidden;
   color: #176bff;
   font-size: 16px;
   font-weight: 950;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.analytics-selector .mini-link-list button em {
+.analytics-link-copy em {
   display: block;
   overflow: hidden;
   margin-top: 6px;
@@ -3691,6 +3702,9 @@ body {
   color: #536591;
   font-size: 14px;
   font-weight: 760;
+  max-width: 76px;
+  overflow: hidden;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
@@ -3767,9 +3781,66 @@ body {
   background-size: 100% 35px, 20% 100%;
 }
 
+.timeline-chart {
+  margin-top: 10px;
+}
+
+.timeline-chart svg {
+  display: block;
+  width: 100%;
+  height: 168px;
+  border: 1px solid #d8e3f2;
+  background: linear-gradient(180deg, #ffffff, #fbfdff);
+}
+
+.chart-grid {
+  stroke: #dce6f4;
+  stroke-width: 1;
+}
+
+.chart-area {
+  fill: url("#timelineFill");
+}
+
+.chart-line {
+  fill: none;
+  stroke: url("#timelineStroke");
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+}
+
+.chart-point {
+  fill: #643cff;
+  stroke: #ffffff;
+  stroke-width: 2;
+}
+
+.timeline-labels {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+  margin-top: 8px;
+  color: #526699;
+  font-size: 13px;
+  font-weight: 720;
+}
+
+.timeline-labels span {
+  text-align: center;
+}
+
 .analytics-breakdown {
   display: grid;
   padding: 0 20px 14px;
+}
+
+.analytics-breakdown-item {
+  border-bottom: 1px solid #dfe8f4;
+}
+
+.analytics-breakdown-item:last-child {
+  border-bottom: 0;
 }
 
 .analytics-breakdown-row {
@@ -3779,15 +3850,15 @@ body {
   align-items: center;
   min-height: 66px;
   border: 0;
-  border-bottom: 1px solid #dfe8f4;
   padding: 0;
   color: #07133f;
   background: #ffffff;
   text-align: left;
+  width: 100%;
 }
 
-.analytics-breakdown-row:last-child {
-  border-bottom: 0;
+.analytics-breakdown-item.open .analytics-breakdown-row > svg {
+  color: #176bff;
 }
 
 .analytics-breakdown-row .breakdown-icon {
@@ -3814,6 +3885,44 @@ body {
 
 .analytics-breakdown-row > svg {
   color: #5b6f9d;
+}
+
+.analytics-breakdown-detail {
+  display: grid;
+  gap: 8px;
+  padding: 0 0 14px 52px;
+}
+
+.analytics-breakdown-detail div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  max-width: 360px;
+  min-height: 30px;
+  align-items: center;
+  border-radius: 8px;
+  padding: 0 10px;
+  color: #31466f;
+  background: #f4f8ff;
+  font-size: 13px;
+  font-weight: 760;
+}
+
+.analytics-breakdown-detail span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.analytics-breakdown-detail strong {
+  color: #176bff;
+}
+
+.analytics-breakdown-detail p {
+  margin: 0;
+  color: #65769e;
+  font-size: 13px;
+  font-weight: 650;
 }
 
 .analytics-main .detail-panel {
@@ -3853,10 +3962,16 @@ body {
 }
 
 .dark-mode .page-header-analytics span,
-.dark-mode .analytics-selector .mini-link-list button em,
+.dark-mode .analytics-link-copy em,
 .dark-mode .analytics-selector .mini-link-list button strong,
 .dark-mode .analytics-breakdown-row em {
   color: #aab7d0;
+}
+
+.dark-mode .timeline-chart svg,
+.dark-mode .analytics-breakdown-detail div {
+  border-color: rgba(101, 122, 161, 0.32);
+  background: #0d162c;
 }
 
 @media (max-width: 1320px) {
