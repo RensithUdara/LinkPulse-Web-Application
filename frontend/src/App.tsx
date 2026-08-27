@@ -70,6 +70,7 @@ export default function App() {
   const [sortMode, setSortMode] = useState<SortMode>('newest');
   const [favoriteIds, setFavoriteIds] = useState<string[]>(storedFavorites);
   const [darkMode, setDarkMode] = useState(false);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
   const selectedURL = urls.find((item) => item.id === selectedId) ?? urls[0];
   const selectedURLId = selectedURL?.id;
@@ -137,6 +138,7 @@ export default function App() {
   }
 
   function logout() {
+    setShowLogoutDialog(false);
     setToken('');
     setEmail('');
     setUser(null);
@@ -211,7 +213,7 @@ export default function App() {
 
         <div className="account-box">
           <span>{email}</span>
-          <button className="icon-button sidebar-action" type="button" onClick={logout} aria-label="Log out" title="Log out">
+          <button className="icon-button sidebar-action" type="button" onClick={() => setShowLogoutDialog(true)} aria-label="Log out" title="Log out">
             <LogOut size={18} />
           </button>
         </div>
@@ -228,6 +230,7 @@ export default function App() {
           onExport={exportCSV}
           onDeleteExpired={deleteExpiredLinks}
           onToggleTheme={() => setDarkMode((current) => !current)}
+          onLogout={() => setShowLogoutDialog(true)}
           canExport={urls.length > 0}
           canDeleteExpired={summary.expiredLinks > 0}
         />
@@ -312,6 +315,8 @@ export default function App() {
             onError={showError}
           />
         )}
+
+        {showLogoutDialog && <LogoutDialog email={email} onCancel={() => setShowLogoutDialog(false)} onConfirm={logout} />}
       </section>
     </main>
   );
@@ -350,6 +355,7 @@ function CommandBar({
   onExport,
   onDeleteExpired,
   onToggleTheme,
+  onLogout,
 }: {
   loading: boolean;
   query: string;
@@ -362,6 +368,7 @@ function CommandBar({
   onExport: () => void;
   onDeleteExpired: () => void;
   onToggleTheme: () => void;
+  onLogout: () => void;
 }) {
   return (
     <header className="command-bar">
@@ -396,13 +403,48 @@ function CommandBar({
         >
           <Moon size={19} />
         </button>
-        <div className="user-chip" title={email}>
+        <button className="user-chip" type="button" title={email} onClick={onLogout}>
           <span className="avatar">{avatarInitial(email)}</span>
           <strong>{emailName(email)}</strong>
           <ChevronDown size={17} />
-        </div>
+        </button>
       </div>
     </header>
+  );
+}
+
+function LogoutDialog({ email, onCancel, onConfirm }: { email: string; onCancel: () => void; onConfirm: () => void }) {
+  return (
+    <div className="dialog-backdrop" role="presentation" onMouseDown={onCancel}>
+      <section
+        className="logout-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="logout-title"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <button className="icon-button dialog-close" type="button" onClick={onCancel} aria-label="Close logout dialog">
+          <X size={18} />
+        </button>
+        <span className="logout-dialog-icon">
+          <LogOut size={30} />
+        </span>
+        <p className="eyebrow">End session</p>
+        <h2 id="logout-title">Log out of LinkPulse?</h2>
+        <p className="logout-dialog-copy">
+          You are signed in as <strong>{email}</strong>. Your links stay saved, and you can log back in anytime.
+        </p>
+        <div className="logout-dialog-actions">
+          <button className="ghost-button" type="button" onClick={onCancel}>
+            Cancel
+          </button>
+          <button className="danger-button" type="button" onClick={onConfirm}>
+            <LogOut size={18} />
+            Logout
+          </button>
+        </div>
+      </section>
+    </div>
   );
 }
 
