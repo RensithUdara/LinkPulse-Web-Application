@@ -10,10 +10,10 @@ import {
   EyeOff,
   ExternalLink,
   FileDown,
-  Filter,
   Globe2,
   Home,
   Link2,
+  List,
   Lock,
   LogOut,
   MoreVertical,
@@ -226,7 +226,15 @@ export default function App() {
           canDeleteExpired={summary.expiredLinks > 0}
         />
 
-        <PageHeader page={page} />
+        <PageHeader
+          page={page}
+          loading={loading}
+          canExport={urls.length > 0}
+          canDeleteExpired={summary.expiredLinks > 0}
+          onRefresh={() => refreshURLs()}
+          onExport={exportCSV}
+          onDeleteExpired={deleteExpiredLinks}
+        />
 
         {notice && (
           <div className={`notice ${notice.type}`} role="status">
@@ -392,7 +400,23 @@ function CommandBar({
   );
 }
 
-function PageHeader({ page }: { page: Page }) {
+function PageHeader({
+  page,
+  loading,
+  canExport,
+  canDeleteExpired,
+  onRefresh,
+  onExport,
+  onDeleteExpired,
+}: {
+  page: Page;
+  loading: boolean;
+  canExport: boolean;
+  canDeleteExpired: boolean;
+  onRefresh: () => void;
+  onExport: () => void;
+  onDeleteExpired: () => void;
+}) {
   const titles = {
     overview: ['Overview', 'Command center for your short-link performance.'],
     links: ['Links', 'Create, search, filter, and maintain every destination.'],
@@ -414,9 +438,26 @@ function PageHeader({ page }: { page: Page }) {
         <h1>{title}</h1>
         <span>{subtitle}</span>
       </div>
-      <div className="page-header-art" aria-hidden="true">
-        {icons[page]}
-      </div>
+      {page === 'links' ? (
+        <div className="page-header-actions">
+          <button className="ghost-button" type="button" onClick={onRefresh} disabled={loading}>
+            <RefreshCw size={18} />
+            Refresh
+          </button>
+          <button className="ghost-button" type="button" onClick={onExport} disabled={!canExport}>
+            <FileDown size={18} />
+            Export
+          </button>
+          <button className="ghost-button danger-lite" type="button" onClick={onDeleteExpired} disabled={!canDeleteExpired}>
+            <Trash2 size={18} />
+            Clear expired
+          </button>
+        </div>
+      ) : (
+        <div className="page-header-art" aria-hidden="true">
+          {icons[page]}
+        </div>
+      )}
     </header>
   );
 }
@@ -563,7 +604,7 @@ function LinksPage({
         <div className="toolbar-row">
           <div className="segmented small">
             <button className={filter === 'all' ? 'active' : ''} type="button" onClick={() => onFilter('all')}>
-              <Filter size={15} />
+              <List size={17} />
               All
             </button>
             <button className={filter === 'active' ? 'active' : ''} type="button" onClick={() => onFilter('active')}>
