@@ -1,4 +1,4 @@
-import { FormEvent, MouseEvent, ReactNode, useEffect, useMemo, useState } from 'react';
+import { FormEvent, MouseEvent, ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   BarChart3,
   CalendarClock,
@@ -19,6 +19,7 @@ import {
   RefreshCw,
   Search,
   ShieldCheck,
+  ShieldPlus,
   Timer,
   Trash2,
   TrendingUp,
@@ -28,7 +29,7 @@ import {
   X,
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Analytics, API_BASE_URL, ShortURL, api, shortURLFor } from './api';
+import { Analytics, API_BASE_URL, ShortURL, User, api, shortURLFor } from './api';
 
 type AuthMode = 'login' | 'register';
 type LinkFilter = 'all' | 'active' | 'expired';
@@ -41,6 +42,7 @@ const storedEmail = localStorage.getItem('links_email') ?? '';
 export default function App() {
   const [token, setToken] = useState(storedToken);
   const [email, setEmail] = useState(storedEmail);
+  const [user, setUser] = useState<User | null>(null);
   const [urls, setUrls] = useState<ShortURL[]>([]);
   const [selectedId, setSelectedId] = useState('');
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
@@ -52,6 +54,7 @@ export default function App() {
   const [apiOnline, setApiOnline] = useState<boolean | null>(null);
 
   const selectedURL = urls.find((item) => item.id === selectedId) ?? urls[0];
+  const selectedURLId = selectedURL?.id;
   const summary = useMemo(() => buildSummary(urls), [urls]);
   const filteredURLs = useMemo(() => {
     const needle = query.toLowerCase().trim();
@@ -75,33 +78,20 @@ export default function App() {
       });
   }, [query, urls, filter, sortMode]);
 
-  useEffect(() => {
-    void checkHealth();
-  }, []);
-
-  useEffect(() => {
-    if (!token) return;
-    void refreshURLs(token);
-  }, [token]);
-
-  useEffect(() => {
-    if (!token || !selectedURL) {
-      setAnalytics(null);
-      return;
-    }
-    void loadAnalytics(token, selectedURL.id);
-  }, [token, selectedURL?.id]);
-
-  async function checkHealth() {
+  const checkHealth = useCallback(async () => {
     try {
       await api.health();
       setApiOnline(true);
     } catch {
       setApiOnline(false);
     }
-  }
+  }, []);
 
-  async function refreshURLs(authToken = token) {
+  const showError = useCallback((error: unknown) => {
+    setNotice({ type: 'error', text: error instanceof Error ? error.message : 'Something went wrong' });
+  }, []);
+
+  const refreshURLs = useCallback(async (authToken = token) => {
     setLoading(true);
     try {
       const data = await api.listURLs(authToken);
@@ -115,15 +105,44 @@ export default function App() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [checkHealth, selectedId, showError, token]);
 
-  async function loadAnalytics(authToken: string, id: string) {
+  const loadAnalytics = useCallback(async (authToken: string, id: string) => {
     try {
       setAnalytics(await api.analytics(authToken, id));
     } catch (error) {
       showError(error);
     }
-  }
+  }, [showError]);
+
+  const loadProfile = useCallback(async (authToken: string) => {
+    try {
+      const profile = await api.me(authToken);
+      setUser(profile.user);
+      setEmail(profile.user.email);
+      localStorage.setItem('links_email', profile.user.email);
+    } catch (error) {
+      showError(error);
+    }
+  }, [showError]);
+
+  useEffect(() => {
+    void checkHealth();
+  }, [checkHealth]);
+
+  useEffect(() => {
+    if (!token) return;
+    void refreshURLs(token);
+    void loadProfile(token);
+  }, [token, refreshURLs, loadProfile]);
+
+  useEffect(() => {
+    if (!token || !selectedURLId) {
+      setAnalytics(null);
+      return;
+    }
+    void loadAnalytics(token, selectedURLId);
+  }, [token, selectedURLId, loadAnalytics]);
 
   function handleAuth(authToken: string, userEmail: string) {
     setToken(authToken);
@@ -138,12 +157,9 @@ export default function App() {
     setUrls([]);
     setSelectedId('');
     setAnalytics(null);
+    setUser(null);
     localStorage.removeItem('links_token');
     localStorage.removeItem('links_email');
-  }
-
-  function showError(error: unknown) {
-    setNotice({ type: 'error', text: error instanceof Error ? error.message : 'Something went wrong' });
   }
 
   function exportCSV() {
@@ -320,6 +336,13 @@ export default function App() {
           </section>
 
           <aside className="side-stack">
+            <AccountPanel
+              token={token}
+              email={email}
+              user={user}
+              onChanged={() => setNotice({ type: 'success', text: 'Password changed' })}
+              onError={showError}
+            />
             <SelectedLinkPanel selectedURL={selectedURL} onCopied={() => setNotice({ type: 'success', text: 'Short URL copied' })} />
             <AnalyticsPanel analytics={analytics} selectedURL={selectedURL} />
           </aside>
@@ -603,12 +626,95 @@ function URLRow({
   );
 }
 
+function AccountPanel({
+  token,
+  email,
+  user,
+  onChanged,
+  onError,
+}: {
+  token: string;
+  email: string;
+  user: User | null;
+  onChanged: () => void;
+  onError: (error: unknown) => void;
+}) {
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSaving(true);
+    try {
+      await api.changePassword(token, currentPassword, newPassword);
+      setCurrentPassword('');
+      setNewPassword('');
+      onChanged();
+    } catch (error) {
+      onError(error);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <section className="panel account-panel">
+      <div className="panel-heading">
+        <div>
+          <p className="eyebrow">Account</p>
+          <h2>{email}</h2>
+        </div>
+        <ShieldPlus size={22} />
+      </div>
+      <div className="account-meta">
+        <div>
+          <span>User ID</span>
+          <strong>{user?.id ?? 'Loading'}</strong>
+        </div>
+        <div>
+          <span>Joined</span>
+          <strong>{user?.created_at ? formatFullDate(user.created_at) : 'Loading'}</strong>
+        </div>
+      </div>
+      <form className="security-form" onSubmit={submit}>
+        <label>
+          Current password
+          <input
+            value={currentPassword}
+            onChange={(event) => setCurrentPassword(event.target.value)}
+            type="password"
+            autoComplete="current-password"
+            required
+          />
+        </label>
+        <label>
+          New password
+          <input
+            value={newPassword}
+            onChange={(event) => setNewPassword(event.target.value)}
+            type="password"
+            minLength={8}
+            autoComplete="new-password"
+            required
+          />
+        </label>
+        <button className="primary-button full" type="submit" disabled={saving}>
+          <ShieldPlus size={17} />
+          {saving ? 'Saving' : 'Change password'}
+        </button>
+      </form>
+    </section>
+  );
+}
+
 function SelectedLinkPanel({ selectedURL, onCopied }: { selectedURL?: ShortURL; onCopied: () => void }) {
   if (!selectedURL) {
     return null;
   }
 
-  const shortURL = shortURLFor(selectedURL.short_code);
+  const link = selectedURL;
+  const shortURL = shortURLFor(link.short_code);
 
   async function copy() {
     await navigator.clipboard.writeText(shortURL);
@@ -618,7 +724,7 @@ function SelectedLinkPanel({ selectedURL, onCopied }: { selectedURL?: ShortURL; 
   function downloadQR() {
     const svg = document.getElementById('selected-link-qr');
     if (!svg) return;
-    downloadFile(`${selectedURL.short_code}-qr.svg`, new XMLSerializer().serializeToString(svg), 'image/svg+xml;charset=utf-8');
+    downloadFile(`${link.short_code}-qr.svg`, new XMLSerializer().serializeToString(svg), 'image/svg+xml;charset=utf-8');
   }
 
   return (
@@ -626,7 +732,7 @@ function SelectedLinkPanel({ selectedURL, onCopied }: { selectedURL?: ShortURL; 
       <div className="panel-heading">
         <div>
           <p className="eyebrow">Selected link</p>
-          <h2>{selectedURL.short_code}</h2>
+          <h2>{link.short_code}</h2>
         </div>
         <QrCode size={22} />
       </div>
@@ -640,11 +746,11 @@ function SelectedLinkPanel({ selectedURL, onCopied }: { selectedURL?: ShortURL; 
         </div>
         <div>
           <span>Destination</span>
-          <strong>{selectedURL.original_url}</strong>
+          <strong>{link.original_url}</strong>
         </div>
         <div>
           <span>Expires</span>
-          <strong>{selectedURL.expires_at ? formatFullDate(selectedURL.expires_at) : 'Never'}</strong>
+          <strong>{link.expires_at ? formatFullDate(link.expires_at) : 'Never'}</strong>
         </div>
       </div>
       <div className="detail-actions">
