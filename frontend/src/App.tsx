@@ -21,25 +21,25 @@ import {
   Search,
   ShieldCheck,
   ShieldPlus,
+  Star,
   Timer,
   Trash2,
   TrendingUp,
   UserPlus,
-  Wifi,
-  WifiOff,
   X,
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Analytics, API_BASE_URL, ShortURL, User, api, shortURLFor } from './api';
+import { Analytics, ShortURL, User, api, shortURLFor } from './api';
 
 type AuthMode = 'login' | 'register';
 type Page = 'overview' | 'links' | 'analytics' | 'account';
-type LinkFilter = 'all' | 'active' | 'expired';
+type LinkFilter = 'all' | 'active' | 'expired' | 'favorite';
 type SortMode = 'newest' | 'clicks';
 type Notice = { type: 'success' | 'error'; text: string } | null;
 
 const storedToken = localStorage.getItem('links_token') ?? '';
 const storedEmail = localStorage.getItem('links_email') ?? '';
+const storedFavorites = JSON.parse(localStorage.getItem('linkpulse_favorites') ?? '[]') as string[];
 
 export default function App() {
   const [token, setToken] = useState(storedToken);
@@ -54,22 +54,13 @@ export default function App() {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<LinkFilter>('all');
   const [sortMode, setSortMode] = useState<SortMode>('newest');
-  const [apiOnline, setApiOnline] = useState<boolean | null>(null);
+  const [favoriteIds, setFavoriteIds] = useState<string[]>(storedFavorites);
 
   const selectedURL = urls.find((item) => item.id === selectedId) ?? urls[0];
   const selectedURLId = selectedURL?.id;
-  const summary = useMemo(() => buildSummary(urls), [urls]);
-  const filteredURLs = useMemo(() => filterURLs(urls, query, filter, sortMode), [urls, query, filter, sortMode]);
-  const recentURLs = useMemo(() => filterURLs(urls, '', 'all', 'newest').slice(0, 5), [urls]);
-
-  const checkHealth = useCallback(async () => {
-    try {
-      await api.health();
-      setApiOnline(true);
-    } catch {
-      setApiOnline(false);
-    }
-  }, []);
+  const summary = useMemo(() => buildSummary(urls, favoriteIds), [urls, favoriteIds]);
+  const filteredURLs = useMemo(() => filterURLs(urls, query, filter, sortMode, favoriteIds), [urls, query, filter, sortMode, favoriteIds]);
+  const recentURLs = useMemo(() => filterURLs(urls, '', 'all', 'newest', favoriteIds).slice(0, 5), [urls, favoriteIds]);
 
   const showError = useCallback((error: unknown) => {
     setNotice({ type: 'error', text: error instanceof Error ? error.message : 'Something went wrong' });
@@ -83,13 +74,12 @@ export default function App() {
       if (data?.length && !data.some((item) => item.id === selectedId)) {
         setSelectedId(data[0].id);
       }
-      await checkHealth();
     } catch (error) {
       showError(error);
     } finally {
       setLoading(false);
     }
-  }, [checkHealth, selectedId, showError, token]);
+  }, [selectedId, showError, token]);
 
   const loadAnalytics = useCallback(async (authToken: string, id: string) => {
     try {
@@ -109,10 +99,6 @@ export default function App() {
       showError(error);
     }
   }, [showError]);
-
-  useEffect(() => {
-    void checkHealth();
-  }, [checkHealth]);
 
   useEffect(() => {
     if (!token) return;
@@ -146,6 +132,29 @@ export default function App() {
     localStorage.removeItem('links_email');
   }
 
+  function toggleFavorite(id: string) {
+    setFavoriteIds((current) => {
+      const next = current.includes(id) ? current.filter((item) => item !== id) : [...current, id];
+      localStorage.setItem('linkpulse_favorites', JSON.stringify(next));
+      return next;
+    });
+  }
+
+  async function deleteExpiredLinks() {
+    const expired = urls.filter(isExpired);
+    if (expired.length === 0) {
+      setNotice({ type: 'success', text: 'No expired links to remove' });
+      return;
+    }
+    try {
+      await Promise.all(expired.map((item) => api.deleteURL(token, item.id)));
+      setNotice({ type: 'success', text: `Removed ${expired.length} expired link${expired.length === 1 ? '' : 's'}` });
+      await refreshURLs();
+    } catch (error) {
+      showError(error);
+    }
+  }
+
   function exportCSV() {
     const rows = [
       ['short_code', 'short_url', 'original_url', 'clicks', 'created_at', 'expires_at'],
@@ -162,7 +171,7 @@ export default function App() {
   }
 
   if (!token) {
-    return <AuthScreen onAuth={handleAuth} notice={notice} setNotice={setNotice} apiOnline={apiOnline} />;
+    return <AuthScreen onAuth={handleAuth} notice={notice} setNotice={setNotice} />;
   }
 
   return (
@@ -185,14 +194,6 @@ export default function App() {
           <NavButton page="account" activePage={page} onSelect={setPage} icon={<ShieldPlus size={18} />} label="Account" />
         </nav>
 
-        <div className="sidebar-status">
-          <span className={`status-dot ${apiOnline ? 'online' : 'offline'}`} />
-          <div>
-            <strong>{apiOnline ? 'API online' : 'API offline'}</strong>
-            <span>{API_BASE_URL.replace(/^https?:\/\//, '')}</span>
-          </div>
-        </div>
-
         <div className="account-box">
           <span>{email}</span>
           <button className="icon-button sidebar-action" type="button" onClick={logout} aria-label="Log out" title="Log out">
@@ -202,7 +203,15 @@ export default function App() {
       </aside>
 
       <section className="workspace">
-        <TopBar page={page} loading={loading} onRefresh={() => refreshURLs()} onExport={exportCSV} canExport={urls.length > 0} />
+        <TopBar
+          page={page}
+          loading={loading}
+          onRefresh={() => refreshURLs()}
+          onExport={exportCSV}
+          onDeleteExpired={deleteExpiredLinks}
+          canExport={urls.length > 0}
+          canDeleteExpired={summary.expiredLinks > 0}
+        />
 
         {notice && (
           <div className={`notice ${notice.type}`} role="status">
@@ -227,6 +236,7 @@ export default function App() {
             onError={showError}
             onGoLinks={() => setPage('links')}
             onGoAnalytics={() => setPage('analytics')}
+            favoriteIds={favoriteIds}
           />
         )}
 
@@ -242,6 +252,8 @@ export default function App() {
             onFilter={setFilter}
             onSort={setSortMode}
             onSelect={setSelectedId}
+            favoriteIds={favoriteIds}
+            onToggleFavorite={toggleFavorite}
             onCopied={() => setNotice({ type: 'success', text: 'Short URL copied' })}
             onDeleted={async () => {
               setNotice({ type: 'success', text: 'Short URL deleted' });
@@ -257,6 +269,8 @@ export default function App() {
             selectedURL={selectedURL}
             analytics={analytics}
             onSelect={setSelectedId}
+            favoriteIds={favoriteIds}
+            onToggleFavorite={toggleFavorite}
             onCopied={() => setNotice({ type: 'success', text: 'Short URL copied' })}
           />
         )}
@@ -266,7 +280,6 @@ export default function App() {
             token={token}
             email={email}
             user={user}
-            apiOnline={apiOnline}
             onChanged={() => setNotice({ type: 'success', text: 'Password changed' })}
             onError={showError}
           />
@@ -301,14 +314,18 @@ function TopBar({
   page,
   loading,
   canExport,
+  canDeleteExpired,
   onRefresh,
   onExport,
+  onDeleteExpired,
 }: {
   page: Page;
   loading: boolean;
   canExport: boolean;
+  canDeleteExpired: boolean;
   onRefresh: () => void;
   onExport: () => void;
+  onDeleteExpired: () => void;
 }) {
   const titles = {
     overview: ['Overview', 'Command center for your short-link performance.'],
@@ -334,6 +351,10 @@ function TopBar({
           <FileDown size={18} />
           Export
         </button>
+        <button className="ghost-button danger-lite" type="button" onClick={onDeleteExpired} disabled={!canDeleteExpired}>
+          <Trash2 size={18} />
+          Clear expired
+        </button>
       </div>
     </header>
   );
@@ -349,6 +370,7 @@ function OverviewPage({
   onError,
   onGoLinks,
   onGoAnalytics,
+  favoriteIds,
 }: {
   token: string;
   summary: ReturnType<typeof buildSummary>;
@@ -359,6 +381,7 @@ function OverviewPage({
   onError: (error: unknown) => void;
   onGoLinks: () => void;
   onGoAnalytics: () => void;
+  favoriteIds: string[];
 }) {
   return (
     <div className="page-stack">
@@ -388,7 +411,7 @@ function OverviewPage({
         <MetricCard tone="blue" icon={<Link2 size={20} />} label="Total links" value={summary.totalLinks} />
         <MetricCard tone="green" icon={<MousePointerClick size={20} />} label="Total clicks" value={summary.totalClicks} />
         <MetricCard tone="amber" icon={<TrendingUp size={20} />} label="Top link clicks" value={summary.topClicks} />
-        <MetricCard tone="rose" icon={<Timer size={20} />} label="Expired links" value={summary.expiredLinks} />
+        <MetricCard tone="rose" icon={<Star size={20} />} label="Favorites" value={summary.favoriteLinks} />
       </section>
 
       <CreateURLForm token={token} onCreated={onCreated} onError={onError} />
@@ -406,7 +429,11 @@ function OverviewPage({
             </button>
           </div>
           <div className="compact-list">
-            {recentURLs.length ? recentURLs.map((item) => <CompactLink key={item.id} item={item} />) : <EmptyState />}
+            {recentURLs.length ? (
+              recentURLs.map((item) => <CompactLink key={item.id} item={item} favorite={favoriteIds.includes(item.id)} />)
+            ) : (
+              <EmptyState />
+            )}
           </div>
         </section>
 
@@ -440,6 +467,8 @@ function LinksPage({
   onFilter,
   onSort,
   onSelect,
+  favoriteIds,
+  onToggleFavorite,
   onCopied,
   onDeleted,
   onError,
@@ -454,6 +483,8 @@ function LinksPage({
   onFilter: (filter: LinkFilter) => void;
   onSort: (sortMode: SortMode) => void;
   onSelect: (id: string) => void;
+  favoriteIds: string[];
+  onToggleFavorite: (id: string) => void;
   onCopied: () => void;
   onDeleted: () => void;
   onError: (error: unknown) => void;
@@ -485,6 +516,10 @@ function LinksPage({
               <Timer size={15} />
               Expired
             </button>
+            <button className={filter === 'favorite' ? 'active' : ''} type="button" onClick={() => onFilter('favorite')}>
+              <Star size={15} />
+              Saved
+            </button>
           </div>
           <select value={sortMode} onChange={(event) => onSort(event.target.value as SortMode)} aria-label="Sort links">
             <option value="newest">Newest first</option>
@@ -500,6 +535,8 @@ function LinksPage({
                 selected={selectedURL?.id === item.id}
                 token={token}
                 onSelect={() => onSelect(item.id)}
+                favorite={favoriteIds.includes(item.id)}
+                onToggleFavorite={() => onToggleFavorite(item.id)}
                 onCopied={onCopied}
                 onDeleted={onDeleted}
                 onError={onError}
@@ -511,7 +548,12 @@ function LinksPage({
         </div>
       </section>
 
-      <SelectedLinkPanel selectedURL={selectedURL} onCopied={onCopied} />
+      <SelectedLinkPanel
+        selectedURL={selectedURL}
+        favorite={selectedURL ? favoriteIds.includes(selectedURL.id) : false}
+        onToggleFavorite={selectedURL ? () => onToggleFavorite(selectedURL.id) : undefined}
+        onCopied={onCopied}
+      />
     </div>
   );
 }
@@ -521,12 +563,16 @@ function AnalyticsPage({
   selectedURL,
   analytics,
   onSelect,
+  favoriteIds,
+  onToggleFavorite,
   onCopied,
 }: {
   urls: ShortURL[];
   selectedURL?: ShortURL;
   analytics: Analytics | null;
   onSelect: (id: string) => void;
+  favoriteIds: string[];
+  onToggleFavorite: (id: string) => void;
   onCopied: () => void;
 }) {
   return (
@@ -542,7 +588,10 @@ function AnalyticsPage({
           {urls.length ? (
             urls.map((item) => (
               <button className={selectedURL?.id === item.id ? 'active' : ''} key={item.id} type="button" onClick={() => onSelect(item.id)}>
-                <span>{item.short_code}</span>
+                <span>
+                  {favoriteIds.includes(item.id) && <Star size={14} />}
+                  {item.short_code}
+                </span>
                 <strong>{item.click_count} clicks</strong>
               </button>
             ))
@@ -554,7 +603,12 @@ function AnalyticsPage({
 
       <section className="analytics-main">
         <AnalyticsPanel analytics={analytics} selectedURL={selectedURL} />
-        <SelectedLinkPanel selectedURL={selectedURL} onCopied={onCopied} />
+        <SelectedLinkPanel
+          selectedURL={selectedURL}
+          favorite={selectedURL ? favoriteIds.includes(selectedURL.id) : false}
+          onToggleFavorite={selectedURL ? () => onToggleFavorite(selectedURL.id) : undefined}
+          onCopied={onCopied}
+        />
       </section>
     </div>
   );
@@ -564,14 +618,12 @@ function AccountPage({
   token,
   email,
   user,
-  apiOnline,
   onChanged,
   onError,
 }: {
   token: string;
   email: string;
   user: User | null;
-  apiOnline: boolean | null;
   onChanged: () => void;
   onError: (error: unknown) => void;
 }) {
@@ -582,10 +634,7 @@ function AccountPage({
           <p className="eyebrow">Security profile</p>
           <h2>{email}</h2>
         </div>
-        <div className={`api-pill ${apiOnline ? 'online' : 'offline'}`}>
-          {apiOnline ? <Wifi size={16} /> : <WifiOff size={16} />}
-          {apiOnline ? 'Backend connected' : 'Backend unavailable'}
-        </div>
+        <ShieldCheck size={54} />
       </section>
       <AccountPanel token={token} email={email} user={user} onChanged={onChanged} onError={onError} />
     </div>
@@ -596,12 +645,10 @@ function AuthScreen({
   onAuth,
   notice,
   setNotice,
-  apiOnline,
 }: {
   onAuth: (token: string, email: string) => void;
   notice: Notice;
   setNotice: (notice: Notice) => void;
-  apiOnline: boolean | null;
 }) {
   const [mode, setMode] = useState<AuthMode>('login');
   const [email, setEmail] = useState('');
@@ -671,11 +718,6 @@ function AuthScreen({
             <strong>LinkPulse</strong>
             <span>Analytics URL shortener</span>
           </div>
-        </div>
-
-        <div className={`api-pill ${apiOnline ? 'online' : 'offline'}`}>
-          {apiOnline ? <Wifi size={16} /> : <WifiOff size={16} />}
-          {apiOnline ? 'Backend connected' : 'Backend unavailable'}
         </div>
 
         {notice && <div className={`notice ${notice.type}`}>{notice.text}</div>}
@@ -793,6 +835,8 @@ function URLRow({
   selected,
   token,
   onSelect,
+  favorite,
+  onToggleFavorite,
   onCopied,
   onDeleted,
   onError,
@@ -801,6 +845,8 @@ function URLRow({
   selected: boolean;
   token: string;
   onSelect: () => void;
+  favorite: boolean;
+  onToggleFavorite: () => void;
   onCopied: () => void;
   onDeleted: () => void;
   onError: (error: unknown) => void;
@@ -844,6 +890,18 @@ function URLRow({
         <span className={expired ? 'expired-chip' : 'active-chip'}>{expired ? 'Expired' : 'Active'}</span>
       </div>
       <div className="row-actions">
+        <button
+          className={`icon-button ${favorite ? 'favorite' : ''}`}
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onToggleFavorite();
+          }}
+          aria-label="Toggle favorite"
+          title="Toggle favorite"
+        >
+          <Star size={17} />
+        </button>
         <button className="icon-button" type="button" onClick={copy} aria-label="Copy short URL" title="Copy short URL">
           <Copy size={17} />
         </button>
@@ -866,10 +924,10 @@ function URLRow({
   );
 }
 
-function CompactLink({ item }: { item: ShortURL }) {
+function CompactLink({ item, favorite }: { item: ShortURL; favorite: boolean }) {
   return (
     <div className="compact-link">
-      <span className={isExpired(item) ? 'dot expired' : 'dot'} />
+      <span className={isExpired(item) ? 'dot expired' : favorite ? 'dot favorite' : 'dot'} />
       <div>
         <strong>{item.short_code}</strong>
         <span>{item.original_url}</span>
@@ -961,7 +1019,17 @@ function AccountPanel({
   );
 }
 
-function SelectedLinkPanel({ selectedURL, onCopied }: { selectedURL?: ShortURL; onCopied: () => void }) {
+function SelectedLinkPanel({
+  selectedURL,
+  favorite = false,
+  onToggleFavorite,
+  onCopied,
+}: {
+  selectedURL?: ShortURL;
+  favorite?: boolean;
+  onToggleFavorite?: () => void;
+  onCopied: () => void;
+}) {
   if (!selectedURL) {
     return (
       <section className="panel detail-panel">
@@ -1011,6 +1079,12 @@ function SelectedLinkPanel({ selectedURL, onCopied }: { selectedURL?: ShortURL; 
         </div>
       </div>
       <div className="detail-actions">
+        {onToggleFavorite && (
+          <button className={`ghost-button ${favorite ? 'favorite' : ''}`} type="button" onClick={onToggleFavorite}>
+            <Star size={17} />
+            {favorite ? 'Saved' : 'Save'}
+          </button>
+        )}
         <button className="ghost-button" type="button" onClick={copy}>
           <Copy size={17} />
           Copy
@@ -1147,12 +1221,13 @@ function EmptyState() {
   );
 }
 
-function filterURLs(urls: ShortURL[], query: string, filter: LinkFilter, sortMode: SortMode) {
+function filterURLs(urls: ShortURL[], query: string, filter: LinkFilter, sortMode: SortMode, favoriteIds: string[] = []) {
   const needle = query.toLowerCase().trim();
   return [...urls]
     .filter((item) => {
       if (filter === 'active') return !isExpired(item);
       if (filter === 'expired') return isExpired(item);
+      if (filter === 'favorite') return favoriteIds.includes(item.id);
       return true;
     })
     .filter((item) => {
@@ -1169,7 +1244,7 @@ function filterURLs(urls: ShortURL[], query: string, filter: LinkFilter, sortMod
     });
 }
 
-function buildSummary(urls: ShortURL[]) {
+function buildSummary(urls: ShortURL[], favoriteIds: string[]) {
   const expiredLinks = urls.filter(isExpired).length;
   return {
     totalLinks: urls.length,
@@ -1177,6 +1252,7 @@ function buildSummary(urls: ShortURL[]) {
     topClicks: Math.max(0, ...urls.map((item) => item.click_count)),
     expiredLinks,
     activeLinks: urls.length - expiredLinks,
+    favoriteLinks: urls.filter((item) => favoriteIds.includes(item.id)).length,
   };
 }
 
