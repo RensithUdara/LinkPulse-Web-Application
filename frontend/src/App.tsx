@@ -14,7 +14,6 @@ import {
   Gauge,
   Globe2,
   Home,
-  LayoutDashboard,
   Link2,
   Lock,
   LogOut,
@@ -323,39 +322,43 @@ function NavButton({
   );
 }
 
-function TopBar({
-  page,
+function CommandBar({
   loading,
+  query,
+  email,
+  darkMode,
   canExport,
   canDeleteExpired,
+  onQuery,
   onRefresh,
   onExport,
   onDeleteExpired,
+  onToggleTheme,
 }: {
-  page: Page;
   loading: boolean;
+  query: string;
+  email: string;
+  darkMode: boolean;
   canExport: boolean;
   canDeleteExpired: boolean;
+  onQuery: (value: string) => void;
   onRefresh: () => void;
   onExport: () => void;
   onDeleteExpired: () => void;
+  onToggleTheme: () => void;
 }) {
-  const titles = {
-    overview: ['Overview', 'Command center for your short-link performance.'],
-    links: ['Links', 'Create, search, filter, and maintain every destination.'],
-    analytics: ['Analytics', 'Inspect clicks, visitors, devices, browsers, and referrers.'],
-    account: ['Account', 'Manage your profile and authentication settings.'],
-  };
-  const [title, subtitle] = titles[page];
-
   return (
-    <header className="page-topbar">
-      <div>
-        <p className="eyebrow">LinkPulse dashboard</p>
-        <h1>{title}</h1>
-        <span>{subtitle}</span>
-      </div>
-      <div className="topbar-actions">
+    <header className="command-bar">
+      <label className="global-search" aria-label="Search links">
+        <Search size={21} />
+        <input
+          value={query}
+          onChange={(event) => onQuery(event.target.value)}
+          placeholder="Search links, aliases or destinations..."
+        />
+      </label>
+
+      <div className="command-actions">
         <button className="ghost-button" type="button" onClick={onRefresh} disabled={loading}>
           <RefreshCw size={18} />
           Refresh
@@ -368,6 +371,49 @@ function TopBar({
           <Trash2 size={18} />
           Clear expired
         </button>
+        <button
+          className="icon-button theme-toggle"
+          type="button"
+          onClick={onToggleTheme}
+          aria-label="Toggle theme"
+          title={darkMode ? 'Use light theme' : 'Use dark theme'}
+        >
+          <Moon size={19} />
+        </button>
+        <div className="user-chip" title={email}>
+          <span className="avatar">{avatarInitial(email)}</span>
+          <strong>{emailName(email)}</strong>
+          <ChevronDown size={17} />
+        </div>
+      </div>
+    </header>
+  );
+}
+
+function PageHeader({ page }: { page: Page }) {
+  const titles = {
+    overview: ['Overview', 'Command center for your short-link performance.'],
+    links: ['Links', 'Create, search, filter, and maintain every destination.'],
+    analytics: ['Analytics', 'Inspect clicks, visitors, devices, browsers, and referrers.'],
+    account: ['Account', 'Manage your profile and authentication settings.'],
+  };
+  const [title, subtitle] = titles[page];
+  const icons = {
+    overview: <Link2 size={48} />,
+    links: <Link2 size={48} />,
+    analytics: <BarChart3 size={50} />,
+    account: <UserRound size={50} />,
+  };
+
+  return (
+    <header className={`page-header page-header-${page}`}>
+      <div>
+        <p className="eyebrow">LinkPulse dashboard</p>
+        <h1>{title}</h1>
+        <span>{subtitle}</span>
+      </div>
+      <div className="page-header-art" aria-hidden="true">
+        {icons[page]}
       </div>
     </header>
   );
@@ -965,15 +1011,24 @@ function AccountPanel({
 }) {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [saving, setSaving] = useState(false);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (newPassword !== confirmPassword) {
+      onError(new Error('New passwords do not match'));
+      return;
+    }
     setSaving(true);
     try {
       await api.changePassword(token, currentPassword, newPassword);
       setCurrentPassword('');
       setNewPassword('');
+      setConfirmPassword('');
       onChanged();
     } catch (error) {
       onError(error);
@@ -1004,24 +1059,56 @@ function AccountPanel({
       <form className="security-form" onSubmit={submit}>
         <label>
           Current password
-          <input
-            value={currentPassword}
-            onChange={(event) => setCurrentPassword(event.target.value)}
-            type="password"
-            autoComplete="current-password"
-            required
-          />
+          <span className="input-shell">
+            <Lock size={18} />
+            <input
+              value={currentPassword}
+              onChange={(event) => setCurrentPassword(event.target.value)}
+              type={showCurrent ? 'text' : 'password'}
+              autoComplete="current-password"
+              placeholder="Enter current password"
+              required
+            />
+            <button type="button" onClick={() => setShowCurrent((current) => !current)} aria-label="Toggle current password visibility">
+              {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </span>
         </label>
         <label>
           New password
-          <input
-            value={newPassword}
-            onChange={(event) => setNewPassword(event.target.value)}
-            type="password"
-            minLength={8}
-            autoComplete="new-password"
-            required
-          />
+          <span className="input-shell">
+            <Lock size={18} />
+            <input
+              value={newPassword}
+              onChange={(event) => setNewPassword(event.target.value)}
+              type={showNew ? 'text' : 'password'}
+              minLength={8}
+              autoComplete="new-password"
+              placeholder="Enter new password"
+              required
+            />
+            <button type="button" onClick={() => setShowNew((current) => !current)} aria-label="Toggle new password visibility">
+              {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </span>
+        </label>
+        <label>
+          Confirm new password
+          <span className="input-shell">
+            <Lock size={18} />
+            <input
+              value={confirmPassword}
+              onChange={(event) => setConfirmPassword(event.target.value)}
+              type={showConfirm ? 'text' : 'password'}
+              minLength={8}
+              autoComplete="new-password"
+              placeholder="Confirm new password"
+              required
+            />
+            <button type="button" onClick={() => setShowConfirm((current) => !current)} aria-label="Toggle confirm password visibility">
+              {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </span>
         </label>
         <button className="primary-button full" type="submit" disabled={saving}>
           <ShieldPlus size={17} />
@@ -1279,6 +1366,14 @@ function formatDate(value: string) {
 
 function formatFullDate(value: string) {
   return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(value));
+}
+
+function emailName(email: string) {
+  return email.split('@')[0] || 'User';
+}
+
+function avatarInitial(email: string) {
+  return (emailName(email).charAt(0) || 'U').toUpperCase();
 }
 
 function csvCell(value: string) {
