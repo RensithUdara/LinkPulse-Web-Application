@@ -2500,3 +2500,465 @@ select {
     font-size: 34px;
   }
 }
+
+/* Premium dashboard mode */
+:root {
+  --title: #08143f;
+  --copy: #52638e;
+  --blue: #1668ff;
+  --cyan: #02a7c7;
+  --violet: #7b3ff2;
+  --shadow: 0 20px 48px rgba(20, 36, 72, 0.12);
+  --shadow-soft: 0 12px 28px rgba(20, 36, 72, 0.08);
+}
+
+body {
+  background:
+    linear-gradient(120deg, rgba(224, 240, 255, 0.86), rgba(250, 253, 255, 0.96) 42%, rgba(237, 243, 252, 0.96)),
+    #f6f9fe;
+}
+
+.app-shell {
+  grid-template-columns: 244px minmax(0, 1fr);
+  background: transparent;
+}
+
+.sidebar {
+  padding: 24px 17px;
+  background:
+    linear-gradient(180deg, #0d1534 0%, #121b49 52%, #006f8e 100%),
+    #0d1534;
+  box-shadow: 18px 0 46px rgba(5, 13, 38, 0.18);
+}
+
+.brand {
+  margin-bottom: 34px;
+  padding: 0 1px;
+}
+
+.brand-mark {
+  width: 54px;
+  height: 54px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: linear-gradient(135deg, #1878ff 0%, #6d55ff 58%, #9b45ea 100%);
+  box-shadow: 0 18px 32px rgba(31, 101, 255, 0.25);
+}
+
+.brand strong {
+  color: #ffffff;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.brand span {
+  color: #e1e9fb;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.nav-stack {
+  gap: 12px;
+}
+
+.nav-item {
+  min-height: 48px;
+  padding: 0 16px;
+  color: #f3f7ff;
+  font-size: 16px;
+  font-weight: 760;
+}
+
+.nav-item svg {
+  stroke-width: 2.4;
+}
+
+.nav-item.active {
+  background: linear-gradient(135deg, #207cff 0%, #783ee9 100%);
+  box-shadow: 0 16px 32px rgba(31, 97, 255, 0.24);
+}
+
+.nav-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateX(3px);
+}
+
+.nav-item.active:hover {
+  background: linear-gradient(135deg, #207cff 0%, #783ee9 100%);
+}
+
+.workspace {
+  padding: 0 32px 34px;
+}
+
+.command-bar {
+  min-height: 78px;
+  margin: 0 -32px 22px;
+  padding: 17px 32px;
+  border-bottom: 1px solid #d8e3f2;
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 8px 24px rgba(18, 32, 64, 0.04);
+}
+
+.global-search {
+  width: min(500px, 42vw);
+}
+
+.global-search input {
+  height: 40px;
+  border-color: #cfdbec;
+  color: #263861;
+  background: #fbfdff;
+  box-shadow: 0 8px 18px rgba(20, 36, 72, 0.04);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.command-actions .ghost-button,
+.theme-toggle {
+  height: 40px;
+  min-height: 40px;
+  border: 1px solid #d9e4f3;
+  color: #1d2c52;
+  background: #ffffff;
+  box-shadow: 0 8px 18px rgba(17, 31, 63, 0.05);
+  font-size: 13px;
+  font-weight: 760;
+}
+
+.command-actions .danger-lite {
+  color: #ff4564;
+  background: #fff6f8;
+}
+
+.user-chip {
+  max-width: 260px;
+  color: #0f1b42;
+  font-weight: 760;
+}
+
+.user-chip strong {
+  overflow: hidden;
+  max-width: 170px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, #116cff 0%, #6b4cff 100%);
+  font-weight: 820;
+}
+
+.page-header-overview {
+  margin-bottom: 18px;
+}
+
+.page-header-overview .eyebrow {
+  margin-bottom: 6px;
+  color: #516491;
+  font-size: 12px;
+  font-weight: 820;
+}
+
+.page-header-overview h1 {
+  color: #08143f;
+  font-size: 40px;
+  font-weight: 820;
+  line-height: 1.03;
+}
+
+.page-header-overview span {
+  color: #516491;
+  font-size: 17px;
+  font-weight: 620;
+}
+
+.hero-panel {
+  grid-template-columns: minmax(0, 1fr) 440px;
+  min-height: 315px;
+  padding: 32px;
+  background:
+    linear-gradient(135deg, #1169ff 0%, #347bff 48%, #8357f5 100%),
+    #1668ff;
+  box-shadow: 0 18px 42px rgba(33, 91, 232, 0.18);
+}
+
+.hero-panel::after {
+  top: -54px;
+  right: -34px;
+  width: 560px;
+  height: 410px;
+  background:
+    linear-gradient(45deg, transparent 0 28%, rgba(255, 255, 255, 0.12) 28% 46%, transparent 46%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0));
+}
+
+.hero-copy .eyebrow {
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.hero-copy h2 {
+  max-width: 650px;
+  color: #ffffff;
+  font-size: 43px;
+  font-weight: 760;
+  line-height: 1.08;
+}
+
+.hero-copy h2::after {
+  margin-top: 10px;
+  max-width: 690px;
+  font-size: 18px;
+  font-weight: 520;
+}
+
+.hero-actions .primary-button,
+.hero-actions .soft-button {
+  min-height: 43px;
+  font-size: 16px;
+}
+
+.hero-art {
+  min-height: 230px;
+}
+
+.hero-link-tile {
+  top: 72px;
+  left: 84px;
+  width: 124px;
+  height: 124px;
+  box-shadow: 16px 18px 0 rgba(39, 48, 154, 0.2), 0 24px 46px rgba(18, 33, 110, 0.24);
+  transform: rotate(8deg);
+}
+
+.hero-feature-chip {
+  width: 148px;
+  min-height: 52px;
+  color: #3042a4;
+  font-size: 15px;
+  font-weight: 780;
+}
+
+.chip-shorter {
+  top: 36px;
+}
+
+.chip-smarter {
+  top: 104px;
+  right: 0;
+}
+
+.chip-stronger {
+  top: 174px;
+}
+
+.metric-grid {
+  margin-top: 1px;
+}
+
+.metric-card {
+  min-height: 86px;
+  border: 1px solid #dce6f4;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 14px 30px rgba(22, 38, 74, 0.07);
+}
+
+.metric-card > span {
+  width: 52px;
+  height: 52px;
+}
+
+.metric-card p {
+  margin-bottom: 5px;
+  color: #68789d;
+  font-size: 13px;
+  font-weight: 660;
+}
+
+.metric-card strong {
+  color: #0a1642;
+  font-size: 31px;
+  font-weight: 760;
+}
+
+.metric-value b {
+  color: #09a76b;
+  font-size: 14px;
+  font-weight: 760;
+}
+
+.metric-card.rose .metric-value b {
+  color: #27345f;
+}
+
+.create-panel,
+.panel {
+  border: 1px solid #dce6f4;
+  background: rgba(255, 255, 255, 0.97);
+  box-shadow: 0 16px 34px rgba(18, 33, 68, 0.07);
+}
+
+.create-panel {
+  padding: 16px;
+}
+
+.create-heading h2,
+.panel-heading:not(.vibrant) h2 {
+  color: #07133f;
+  font-size: 22px;
+  font-weight: 740;
+}
+
+.create-heading p {
+  color: #52638e;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.create-heading > span {
+  color: #176bff;
+  background: #ecebff;
+}
+
+.create-options {
+  box-shadow: 0 12px 24px rgba(18, 32, 64, 0.08);
+}
+
+.create-panel label {
+  color: #33456f;
+  font-weight: 640;
+}
+
+.create-panel input {
+  height: 44px;
+  border-color: #ccd8ea;
+}
+
+.create-panel .primary-button {
+  background: linear-gradient(135deg, #176bff 0%, #0ea5d7 100%);
+  font-size: 16px;
+  font-weight: 760;
+}
+
+.overview-grid {
+  grid-template-columns: minmax(0, 2.2fr) minmax(360px, 0.78fr);
+}
+
+.panel-heading {
+  min-height: 76px;
+  padding: 16px 18px;
+}
+
+.panel-heading .eyebrow {
+  color: #677799;
+  font-weight: 700;
+}
+
+.compact-link {
+  grid-template-columns: auto minmax(0, 1fr) 110px 92px 34px;
+  min-height: 68px;
+}
+
+.compact-link strong {
+  color: #146aff;
+  font-size: 17px;
+  font-weight: 760;
+}
+
+.compact-link span:not(.dot) {
+  color: #52638e;
+  font-size: 15px;
+  font-weight: 520;
+}
+
+.compact-link em {
+  color: #009c68;
+  background: #daf8ee;
+  font-weight: 760;
+}
+
+.overview-grid .panel-heading.vibrant h2 {
+  color: #07133f;
+  font-size: 22px;
+  font-weight: 740;
+}
+
+.overview-grid .panel-heading.vibrant .eyebrow {
+  color: #07133f;
+  font-weight: 700;
+}
+
+.stats-grid {
+  gap: 14px;
+}
+
+.stat {
+  border: 0;
+  box-shadow: none;
+}
+
+.stat span {
+  color: #07133f;
+  font-size: 15px;
+  font-weight: 760;
+}
+
+.stat strong {
+  color: #07133f;
+  font-size: 30px;
+  font-weight: 760;
+}
+
+.dark-mode body,
+.dark-mode {
+  background: #070d1d;
+}
+
+.dark-mode .sidebar {
+  background:
+    linear-gradient(180deg, #070d1d 0%, #111941 58%, #005a76 100%),
+    #070d1d;
+}
+
+.dark-mode .command-bar,
+.dark-mode .create-panel,
+.dark-mode .panel,
+.dark-mode .metric-card {
+  border-color: rgba(101, 122, 161, 0.32);
+  background: rgba(13, 22, 44, 0.96);
+}
+
+.dark-mode .page-header-overview h1,
+.dark-mode .create-heading h2,
+.dark-mode .panel-heading:not(.vibrant) h2,
+.dark-mode .overview-grid .panel-heading.vibrant h2,
+.dark-mode .metric-card strong,
+.dark-mode .stat strong,
+.dark-mode .stat span {
+  color: #f2f6ff;
+}
+
+.dark-mode .hero-panel {
+  background:
+    linear-gradient(135deg, #064cd7 0%, #1c62f5 48%, #693ee2 100%),
+    #064cd7;
+}
+
+@media (max-width: 1220px) {
+  .hero-panel {
+    min-height: 260px;
+  }
+}
+
+@media (max-width: 760px) {
+  .hero-panel {
+    min-height: auto;
+  }
+
+  .hero-copy h2,
+  .page-header-overview h1 {
+    font-size: 34px;
+  }
+}
