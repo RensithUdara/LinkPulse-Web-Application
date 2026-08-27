@@ -45,6 +45,14 @@ type AuthResponse = {
   token: string;
 };
 
+type MeResponse = {
+  user: User;
+};
+
+type MessageResponse = {
+  message: string;
+};
+
 type CreateURLResponse = {
   id: string;
   original_url: string;
@@ -80,6 +88,9 @@ export function shortURLFor(code: string) {
 }
 
 export const api = {
+  health() {
+    return request<{ status: string }>('/health');
+  },
   register(email: string, password: string) {
     return request<AuthResponse>('/api/auth/register', {
       method: 'POST',
@@ -91,6 +102,19 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
+  },
+  me(token: string) {
+    return request<MeResponse>('/api/auth/me', {}, token);
+  },
+  changePassword(token: string, currentPassword: string, newPassword: string) {
+    return request<MessageResponse>(
+      '/api/auth/password',
+      {
+        method: 'PUT',
+        body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+      },
+      token,
+    );
   },
   listURLs(token: string) {
     return request<ShortURL[]>('/api/urls', {}, token);
