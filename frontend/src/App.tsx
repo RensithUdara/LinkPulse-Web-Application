@@ -2,18 +2,23 @@ import { FormEvent, MouseEvent, ReactNode, useCallback, useEffect, useMemo, useS
 import {
   BarChart3,
   CalendarClock,
+  ChevronDown,
   Check,
   Copy,
   Download,
+  Eye,
+  EyeOff,
   ExternalLink,
   FileDown,
   Filter,
   Gauge,
   Globe2,
+  Home,
   LayoutDashboard,
   Link2,
   Lock,
   LogOut,
+  Moon,
   MousePointerClick,
   Plus,
   QrCode,
@@ -26,6 +31,7 @@ import {
   Trash2,
   TrendingUp,
   UserPlus,
+  UserRound,
   X,
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
@@ -55,6 +61,7 @@ export default function App() {
   const [filter, setFilter] = useState<LinkFilter>('all');
   const [sortMode, setSortMode] = useState<SortMode>('newest');
   const [favoriteIds, setFavoriteIds] = useState<string[]>(storedFavorites);
+  const [darkMode, setDarkMode] = useState(false);
 
   const selectedURL = urls.find((item) => item.id === selectedId) ?? urls[0];
   const selectedURLId = selectedURL?.id;
@@ -175,7 +182,7 @@ export default function App() {
   }
 
   return (
-    <main className="app-shell">
+    <main className={`app-shell ${darkMode ? 'dark-mode' : ''}`}>
       <aside className="sidebar">
         <div className="brand">
           <span className="brand-mark">
@@ -188,10 +195,10 @@ export default function App() {
         </div>
 
         <nav className="nav-stack" aria-label="Dashboard pages">
-          <NavButton page="overview" activePage={page} onSelect={setPage} icon={<LayoutDashboard size={18} />} label="Overview" />
+          <NavButton page="overview" activePage={page} onSelect={setPage} icon={<Home size={18} />} label="Overview" />
           <NavButton page="links" activePage={page} onSelect={setPage} icon={<Link2 size={18} />} label="Links" />
           <NavButton page="analytics" activePage={page} onSelect={setPage} icon={<BarChart3 size={18} />} label="Analytics" />
-          <NavButton page="account" activePage={page} onSelect={setPage} icon={<ShieldPlus size={18} />} label="Account" />
+          <NavButton page="account" activePage={page} onSelect={setPage} icon={<UserRound size={18} />} label="Account" />
         </nav>
 
         <div className="account-box">
@@ -203,15 +210,21 @@ export default function App() {
       </aside>
 
       <section className="workspace">
-        <TopBar
-          page={page}
+        <CommandBar
           loading={loading}
+          query={query}
+          email={email}
+          darkMode={darkMode}
+          onQuery={setQuery}
           onRefresh={() => refreshURLs()}
           onExport={exportCSV}
           onDeleteExpired={deleteExpiredLinks}
+          onToggleTheme={() => setDarkMode((current) => !current)}
           canExport={urls.length > 0}
           canDeleteExpired={summary.expiredLinks > 0}
         />
+
+        <PageHeader page={page} />
 
         {notice && (
           <div className={`notice ${notice.type}`} role="status">
