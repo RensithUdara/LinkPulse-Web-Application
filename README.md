@@ -34,6 +34,8 @@ Run the API:
 go run ./cmd/server
 ```
 
+The API automatically reads `.env` from the project root during local development.
+
 Run the frontend:
 
 ```bash
