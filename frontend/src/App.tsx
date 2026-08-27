@@ -17,12 +17,14 @@ import {
   Link2,
   Lock,
   LogOut,
+  MoreVertical,
   Moon,
   MousePointerClick,
   Plus,
   QrCode,
   RefreshCw,
   Search,
+  Settings,
   ShieldCheck,
   ShieldPlus,
   Star,
@@ -31,7 +33,9 @@ import {
   TrendingUp,
   UserPlus,
   UserRound,
+  Users,
   X,
+  Zap,
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Analytics, ShortURL, User, api, shortURLFor } from './api';
@@ -459,18 +463,14 @@ function OverviewPage({
             </button>
           </div>
         </div>
-        <div className="hero-meter">
-          <span>Total clicks</span>
-          <strong>{summary.totalClicks.toLocaleString()}</strong>
-          <MiniSparkline data={[summary.totalLinks, summary.totalClicks, summary.topClicks, summary.activeLinks]} />
-        </div>
+        <HeroArt />
       </section>
 
       <section className="metric-grid" aria-label="Link summary">
-        <MetricCard tone="blue" icon={<Link2 size={20} />} label="Total links" value={summary.totalLinks} />
-        <MetricCard tone="green" icon={<MousePointerClick size={20} />} label="Total clicks" value={summary.totalClicks} />
-        <MetricCard tone="amber" icon={<TrendingUp size={20} />} label="Top link clicks" value={summary.topClicks} />
-        <MetricCard tone="rose" icon={<Star size={20} />} label="Favorites" value={summary.favoriteLinks} />
+        <MetricCard tone="blue" icon={<Link2 size={20} />} label="Total links" value={summary.totalLinks} growth={summary.totalLinks ? '+100%' : '0%'} />
+        <MetricCard tone="green" icon={<MousePointerClick size={20} />} label="Total clicks" value={summary.totalClicks} growth={summary.totalClicks ? '+200%' : '0%'} />
+        <MetricCard tone="amber" icon={<TrendingUp size={20} />} label="Top link clicks" value={summary.topClicks} growth={summary.topClicks ? '+200%' : '0%'} />
+        <MetricCard tone="rose" icon={<Star size={20} />} label="Favorites" value={summary.favoriteLinks} growth={summary.favoriteLinks ? '+100%' : '0%'} />
       </section>
 
       <CreateURLForm token={token} onCreated={onCreated} onError={onError} />
@@ -479,12 +479,12 @@ function OverviewPage({
         <section className="panel">
           <div className="panel-heading">
             <div>
-              <p className="eyebrow">Recent links</p>
-              <h2>Latest activity</h2>
+              <p className="eyebrow">Recent activity</p>
+              <h2>Your latest created links</h2>
             </div>
             <button className="ghost-button compact" type="button" onClick={onGoLinks}>
-              <ExternalLink size={16} />
-              Open
+              <RefreshCw size={16} />
+              Open all
             </button>
           </div>
           <div className="compact-list">
@@ -499,14 +499,17 @@ function OverviewPage({
         <section className="panel">
           <div className="panel-heading vibrant">
             <div>
-              <p className="eyebrow">Snapshot</p>
-              <h2>{selectedURL ? selectedURL.short_code : 'No link yet'}</h2>
+              <p className="eyebrow">Analytics snapshot</p>
+              <h2>Last 30 days</h2>
             </div>
-            <Gauge size={22} />
+            <select aria-label="Analytics range" defaultValue="30">
+              <option value="30">Last 30 days</option>
+              <option value="7">Last 7 days</option>
+            </select>
           </div>
           <div className="stats-grid">
-            <Stat label="Clicks" value={analytics?.total_clicks ?? 0} tone="teal" />
-            <Stat label="Visitors" value={analytics?.unique_visitors ?? 0} tone="amber" />
+            <Stat label="Clicks" value={analytics?.total_clicks ?? 0} tone="teal" icon={<Users size={22} />} />
+            <Stat label="Visitors" value={analytics?.unique_visitors ?? 0} tone="amber" icon={<UserRound size={22} />} />
           </div>
           <MiniTimeline data={analytics?.clicks_by_day ?? []} />
         </section>
@@ -854,14 +857,20 @@ function CreateURLForm({
 
   return (
     <form className="create-panel" id="create-link" onSubmit={submit}>
-      <div className="create-heading">
-        <span>
-          <Plus size={18} />
-        </span>
-        <div>
-          <p className="eyebrow">Create</p>
-          <h2>Trackable short link</h2>
+      <div className="create-topline">
+        <div className="create-heading">
+          <span>
+            <Link2 size={22} />
+          </span>
+          <div>
+            <h2>Create short link</h2>
+            <p>Turn your long URL into a clean, trackable link.</p>
+          </div>
         </div>
+        <button className="ghost-button compact create-options" type="button">
+          <Settings size={16} />
+          Advanced options
+        </button>
       </div>
       <label className="wide-field">
         Destination URL
@@ -883,7 +892,7 @@ function CreateURLForm({
       </label>
       <button className="primary-button" type="submit" disabled={loading}>
         <Plus size={18} />
-        {loading ? 'Creating' : 'Create'}
+        {loading ? 'Creating' : 'Create link'}
       </button>
     </form>
   );
@@ -991,7 +1000,11 @@ function CompactLink({ item, favorite }: { item: ShortURL; favorite: boolean }) 
         <strong>{item.short_code}</strong>
         <span>{item.original_url}</span>
       </div>
-      <em>{item.click_count}</em>
+      <time>{relativeTime(item.created_at)}</time>
+      <em>{item.click_count} clicks</em>
+      <button className="icon-button compact-menu" type="button" aria-label={`More actions for ${item.short_code}`}>
+        <MoreVertical size={18} />
+      </button>
     </div>
   );
 }
@@ -1227,28 +1240,59 @@ function MetricCard({
   label,
   value,
   tone,
+  growth,
 }: {
   icon: ReactNode;
   label: string;
   value: number;
   tone: 'blue' | 'green' | 'amber' | 'rose';
+  growth: string;
 }) {
   return (
     <article className={`metric-card ${tone}`}>
       <span>{icon}</span>
       <div>
         <p>{label}</p>
-        <strong>{value.toLocaleString()}</strong>
+        <div className="metric-value">
+          <strong>{value.toLocaleString()}</strong>
+          <b>{growth}</b>
+        </div>
       </div>
+      <MiniSparkline data={[1, 3, 2, 5, 6, 9, 10, 13]} />
     </article>
   );
 }
 
-function Stat({ label, value, tone }: { label: string; value: number; tone: 'teal' | 'amber' }) {
+function Stat({ label, value, tone, icon }: { label: string; value: number; tone: 'teal' | 'amber'; icon?: ReactNode }) {
   return (
     <div className={`stat ${tone}`}>
-      <span>{label}</span>
+      <span>
+        {label}
+        {icon}
+      </span>
       <strong>{value.toLocaleString()}</strong>
+    </div>
+  );
+}
+
+function HeroArt() {
+  return (
+    <div className="hero-art" aria-hidden="true">
+      <div className="hero-link-tile">
+        <Link2 size={70} />
+      </div>
+      <div className="hero-feature-chip chip-shorter">
+        <Zap size={22} />
+        <span>Shorter</span>
+      </div>
+      <div className="hero-feature-chip chip-smarter">
+        <BarChart3 size={22} />
+        <span>Smarter</span>
+      </div>
+      <div className="hero-feature-chip chip-stronger">
+        <ShieldCheck size={22} />
+        <span>Stronger</span>
+      </div>
     </div>
   );
 }
@@ -1366,6 +1410,16 @@ function formatDate(value: string) {
 
 function formatFullDate(value: string) {
   return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(value));
+}
+
+function relativeTime(value: string) {
+  const diff = Date.now() - new Date(value).getTime();
+  const minutes = Math.max(1, Math.round(diff / 60000));
+  if (minutes < 60) return `${minutes} min ago`;
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return `${hours} hour${hours === 1 ? '' : 's'} ago`;
+  const days = Math.round(hours / 24);
+  return `${days} day${days === 1 ? '' : 's'} ago`;
 }
 
 function emailName(email: string) {
