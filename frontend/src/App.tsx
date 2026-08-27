@@ -879,12 +879,27 @@ function AuthScreen({
   setNotice: (notice: Notice) => void;
 }) {
   const [mode, setMode] = useState<AuthMode>('login');
+  const [fullName, setFullName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(true);
+  const [agreeTerms, setAgreeTerms] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (mode === 'register' && password !== confirmPassword) {
+      setNotice({ type: 'error', text: 'Passwords do not match' });
+      return;
+    }
+    if (mode === 'register' && !agreeTerms) {
+      setNotice({ type: 'error', text: 'Please agree to the terms before creating your account' });
+      return;
+    }
     setLoading(true);
     try {
       const result = mode === 'login' ? await api.login(email, password) : await api.register(email, password);
@@ -898,91 +913,189 @@ function AuthScreen({
 
   return (
     <main className="auth-layout">
-      <section className="auth-visual" aria-hidden="true">
+      <section className="auth-visual">
+        <div className="auth-brand">
+          <img src={linkPulseLogo} alt="" />
+          <div>
+            <strong>LinkPulse</strong>
+            <span>Smart short links</span>
+          </div>
+        </div>
+
+        <div className="auth-kicker">Shorten <span /> Track <span /> Grow</div>
+
         <div className="auth-copy">
-          <span>LinkPulse</span>
-          <strong>Modern link analytics built for campaigns.</strong>
+          <h1>
+            {mode === 'login' ? (
+              <>
+                More than <br /> just shorter <mark>links.</mark>
+              </>
+            ) : (
+              <>
+                Modern link <br /> analytics built <br /> for <mark>campaigns.</mark>
+              </>
+            )}
+          </h1>
+          <p>Create short links, track performance, and gain valuable insights - all in one powerful platform.</p>
         </div>
-        <div className="preview-window">
-          <div className="preview-top">
-            <span />
-            <span />
-            <span />
-          </div>
-          <div className="preview-chart">
-            <i style={{ height: '42%' }} />
-            <i style={{ height: '76%' }} />
-            <i style={{ height: '54%' }} />
-            <i style={{ height: '92%' }} />
-            <i style={{ height: '68%' }} />
-          </div>
-          <div className="preview-row">
-            <span />
-            <strong />
-          </div>
-          <div className="preview-row short">
-            <span />
-            <strong />
-          </div>
+
+        <div className="auth-feature-list">
+          <AuthFeature icon={<Link2 size={28} />} tone="blue" title="Shorten Links" text="Clean, branded and shareable links." />
+          <AuthFeature icon={<BarChart3 size={28} />} tone="green" title="Powerful Analytics" text="Track clicks, locations, devices and more." />
+          <AuthFeature icon={<Target size={28} />} tone="amber" title="Built for Campaigns" text="Measure what matters." />
+          <AuthFeature icon={<Zap size={28} />} tone="violet" title="Fast & Reliable" text="99.9% uptime, worldwide." />
         </div>
-        <div className="metric-tile">
-          <MousePointerClick size={20} />
-          <strong>12.4k</strong>
-          <span>tracked clicks</span>
-        </div>
-        <div className="metric-tile secondary">
-          <ShieldCheck size={20} />
-          <strong>98%</strong>
-          <span>cache-ready redirects</span>
+
+        <div className="auth-footer-line">
+          Turn every link into an opportunity.
+          <ArrowRight size={22} />
         </div>
       </section>
 
       <section className="auth-card">
-        <div className="brand compact">
-          <span className="brand-mark">
-            <img src={linkPulseLogo} alt="" />
-          </span>
-          <div>
-            <strong>LinkPulse</strong>
-            <span>Analytics URL shortener</span>
+        <div className="auth-form-card">
+          <img className="auth-card-logo" src={linkPulseLogo} alt="" />
+          <h2>Link<span>Pulse</span></h2>
+          <p className="auth-card-subtitle">Smart short links</p>
+
+          <div className="auth-form-heading">
+            <h3>{mode === 'login' ? 'Welcome back' : 'Create your account'}</h3>
+            <p>{mode === 'login' ? 'Sign in to your account and continue tracking your links.' : 'Join LinkPulse and start managing your links today.'}</p>
+          </div>
+
+          <div className="secure-banner">
+            <span>
+              <ShieldCheck size={24} />
+            </span>
+            <div>
+              <strong>Your data is secure</strong>
+              <p>We keep your information safe and private.</p>
+            </div>
+          </div>
+
+          {notice && <div className={`notice ${notice.type}`}>{notice.text}</div>}
+
+          <form onSubmit={submit} className="stack-form auth-stack">
+            {mode === 'register' && (
+              <label>
+                Full name
+                <span className="auth-input-shell">
+                  <UserRound size={20} />
+                  <input value={fullName} onChange={(event) => setFullName(event.target.value)} placeholder="Rensith Udara" required />
+                </span>
+              </label>
+            )}
+            <label>
+              Email address
+              <span className="auth-input-shell">
+                <Mail size={20} />
+                <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" placeholder="rensithudaragonalagoda@gmail.com" required />
+              </span>
+            </label>
+            {mode === 'register' && (
+              <label>
+                Username
+                <span className="auth-input-shell">
+                  <span className="auth-at">@</span>
+                  <input value={username} onChange={(event) => setUsername(event.target.value)} placeholder="rensithudara" required />
+                </span>
+              </label>
+            )}
+            <label>
+              Password
+              <span className="auth-input-shell">
+                <Lock size={20} />
+                <input
+                  value={password}
+                  onChange={(event) => setPassword(event.target.value)}
+                  type={showPassword ? 'text' : 'password'}
+                  minLength={8}
+                  required
+                />
+                <button type="button" onClick={() => setShowPassword((current) => !current)} aria-label="Toggle password visibility">
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </span>
+            </label>
+            {mode === 'register' && (
+              <label>
+                Confirm password
+                <span className="auth-input-shell">
+                  <Lock size={20} />
+                  <input
+                    value={confirmPassword}
+                    onChange={(event) => setConfirmPassword(event.target.value)}
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    minLength={8}
+                    required
+                  />
+                  <button type="button" onClick={() => setShowConfirmPassword((current) => !current)} aria-label="Toggle confirm password visibility">
+                    {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                  </button>
+                </span>
+              </label>
+            )}
+
+            {mode === 'login' ? (
+              <div className="auth-inline-row">
+                <label className="auth-check">
+                  <input checked={rememberMe} onChange={(event) => setRememberMe(event.target.checked)} type="checkbox" />
+                  <span>Remember me</span>
+                </label>
+                <button type="button">Forgot password?</button>
+              </div>
+            ) : (
+              <label className="auth-check auth-terms">
+                <input checked={agreeTerms} onChange={(event) => setAgreeTerms(event.target.checked)} type="checkbox" />
+                <span>
+                  I agree to the <a href="#terms">Terms of Service</a> and <a href="#privacy">Privacy Policy</a>.
+                </span>
+              </label>
+            )}
+
+            <button className="primary-button full auth-submit" disabled={loading} type="submit">
+              {mode === 'login' ? <Lock size={22} /> : <UserPlus size={22} />}
+              {loading ? 'Working...' : mode === 'login' ? 'Login' : 'Create account'}
+              <ArrowRight size={24} />
+            </button>
+          </form>
+
+          <div className="auth-switch-row">
+            <span />
+            {mode === 'login' ? (
+              <p>
+                Don't have an account?
+                <button type="button" onClick={() => setMode('register')}>
+                  Register now
+                  <ArrowRight size={20} />
+                </button>
+              </p>
+            ) : (
+              <p>
+                Already have an account?
+                <button type="button" onClick={() => setMode('login')}>
+                  Login here
+                  <ArrowRight size={20} />
+                </button>
+              </p>
+            )}
+            <span />
           </div>
         </div>
-
-        {notice && <div className={`notice ${notice.type}`}>{notice.text}</div>}
-
-        <div className="segmented">
-          <button className={mode === 'login' ? 'active' : ''} type="button" onClick={() => setMode('login')}>
-            <Lock size={16} />
-            Login
-          </button>
-          <button className={mode === 'register' ? 'active' : ''} type="button" onClick={() => setMode('register')}>
-            <UserPlus size={16} />
-            Register
-          </button>
-        </div>
-
-        <form onSubmit={submit} className="stack-form">
-          <label>
-            Email
-            <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" required />
-          </label>
-          <label>
-            Password
-            <input
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              type="password"
-              minLength={8}
-              required
-            />
-          </label>
-          <button className="primary-button full" disabled={loading} type="submit">
-            {mode === 'login' ? <Lock size={18} /> : <UserPlus size={18} />}
-            {loading ? 'Working...' : mode === 'login' ? 'Login' : 'Create account'}
-          </button>
-        </form>
       </section>
     </main>
+  );
+}
+
+function AuthFeature({ icon, tone, title, text }: { icon: ReactNode; tone: 'blue' | 'green' | 'amber' | 'violet'; title: string; text: string }) {
+  return (
+    <div className={`auth-feature ${tone}`}>
+      <span>{icon}</span>
+      <div>
+        <strong>{title}</strong>
+        <p>{text}</p>
+      </div>
+    </div>
   );
 }
 
