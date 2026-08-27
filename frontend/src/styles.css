@@ -5476,16 +5476,51 @@ body {
 }
 
 .auth-form-card {
+  width: min(580px, 100%) !important;
   max-height: calc(100vh - 36px) !important;
 }
 
 @media (min-width: 1201px) {
   .auth-layout {
-    grid-template-columns: minmax(0, 1.6fr) minmax(480px, 0.9fr);
+    grid-template-columns: minmax(0, 1.38fr) minmax(660px, 1fr);
   }
 
   .auth-visual {
     padding-left: 56px;
     padding-right: 56px;
+  }
+}
+
+/* Wider auth cards */
+.auth-card {
+  padding-left: 42px;
+  padding-right: 42px;
+}
+
+.auth-form-card {
+  width: min(640px, 100%) !important;
+}
+
+.auth-input-shell {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+.auth-switch-row button {
+  border-radius: 8px;
+  padding: 3px 6px;
+}
+
+.auth-switch-row button:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(23, 107, 255, 0.16);
+}
+
+@media (min-width: 1500px) {
+  .auth-layout {
+    grid-template-columns: minmax(0, 1.45fr) minmax(720px, 1fr);
+  }
+
+  .auth-form-card {
+    width: min(680px, 100%) !important;
   }
 }
