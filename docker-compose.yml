@@ -24,6 +24,7 @@ services:
       JWT_SECRET: replace-with-a-long-random-secret
       CACHE_TTL_SECONDS: 3600
       RATE_LIMIT_PER_MIN: 120
+      FRONTEND_ORIGIN: http://localhost:5173
     depends_on:
       postgres:
         condition: service_healthy
