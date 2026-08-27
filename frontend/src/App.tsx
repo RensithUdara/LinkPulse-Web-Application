@@ -413,38 +413,94 @@ function CommandBar({
   );
 }
 
-function LogoutDialog({ email, onCancel, onConfirm }: { email: string; onCancel: () => void; onConfirm: () => void }) {
+function ConfirmDialog({
+  eyebrow,
+  title,
+  message,
+  confirmLabel,
+  icon,
+  onCancel,
+  onConfirm,
+}: {
+  eyebrow: string;
+  title: string;
+  message: ReactNode;
+  confirmLabel: string;
+  icon: ReactNode;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
   return (
     <div className="dialog-backdrop" role="presentation" onMouseDown={onCancel}>
       <section
-        className="logout-dialog"
+        className="confirm-dialog"
         role="dialog"
         aria-modal="true"
-        aria-labelledby="logout-title"
+        aria-labelledby="confirm-title"
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <button className="icon-button dialog-close" type="button" onClick={onCancel} aria-label="Close logout dialog">
+        <button className="icon-button dialog-close" type="button" onClick={onCancel} aria-label="Close confirmation dialog">
           <X size={18} />
         </button>
-        <span className="logout-dialog-icon">
-          <LogOut size={30} />
-        </span>
-        <p className="eyebrow">End session</p>
-        <h2 id="logout-title">Log out of LinkPulse?</h2>
-        <p className="logout-dialog-copy">
-          You are signed in as <strong>{email}</strong>. Your links stay saved, and you can log back in anytime.
-        </p>
-        <div className="logout-dialog-actions">
+        <span className="confirm-dialog-icon">{icon}</span>
+        <p className="eyebrow">{eyebrow}</p>
+        <h2 id="confirm-title">{title}</h2>
+        <p className="confirm-dialog-copy">{message}</p>
+        <div className="confirm-dialog-actions">
           <button className="ghost-button" type="button" onClick={onCancel}>
             Cancel
           </button>
           <button className="danger-button" type="button" onClick={onConfirm}>
-            <LogOut size={18} />
-            Logout
+            {icon}
+            {confirmLabel}
           </button>
         </div>
       </section>
     </div>
+  );
+}
+
+function LogoutDialog({ email, onCancel, onConfirm }: { email: string; onCancel: () => void; onConfirm: () => void }) {
+  return (
+    <ConfirmDialog
+      eyebrow="End session"
+      title="Log out of LinkPulse?"
+      message={
+        <>
+          You are signed in as <strong>{email}</strong>. Your links stay saved, and you can log back in anytime.
+        </>
+      }
+      confirmLabel="Logout"
+      icon={<LogOut size={20} />}
+      onCancel={onCancel}
+      onConfirm={onConfirm}
+    />
+  );
+}
+
+function DeleteLinkDialog({
+  shortCode,
+  onCancel,
+  onConfirm,
+}: {
+  shortCode: string;
+  onCancel: () => void;
+  onConfirm: () => void;
+}) {
+  return (
+    <ConfirmDialog
+      eyebrow="Delete link"
+      title="Delete this short link?"
+      message={
+        <>
+          This will remove <strong>{shortCode}</strong> and its saved link details from your dashboard.
+        </>
+      }
+      confirmLabel="Delete link"
+      icon={<Trash2 size={20} />}
+      onCancel={onCancel}
+      onConfirm={onConfirm}
+    />
   );
 }
 
@@ -1026,6 +1082,7 @@ function URLRow({
 }) {
   const shortURL = shortURLFor(item.short_code);
   const expired = isExpired(item);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   async function copy(event: MouseEvent<HTMLButtonElement>) {
     event.stopPropagation();
@@ -1033,10 +1090,10 @@ function URLRow({
     onCopied();
   }
 
-  async function remove(event: MouseEvent<HTMLButtonElement>) {
-    event.stopPropagation();
+  async function remove() {
     try {
       await api.deleteURL(token, item.id);
+      setShowDeleteDialog(false);
       onDeleted();
     } catch (error) {
       onError(error);
@@ -1044,56 +1101,70 @@ function URLRow({
   }
 
   return (
-    <article className={`url-row ${selected ? 'selected' : ''}`} onClick={onSelect}>
-      <div className="url-main">
-        <button className="link-title" type="button" onClick={onSelect}>
-          {item.short_code}
-        </button>
-        <span>{item.original_url}</span>
-      </div>
-      <div className="row-metrics">
-        <span className="click-chip">
-          <MousePointerClick size={15} />
-          {item.click_count}
-        </span>
-        <span>
-          <CalendarClock size={15} />
-          {formatDate(item.created_at)}
-        </span>
-        <span className={expired ? 'expired-chip' : 'active-chip'}>{expired ? 'Expired' : 'Active'}</span>
-      </div>
-      <div className="row-actions">
-        <button
-          className={`icon-button ${favorite ? 'favorite' : ''}`}
-          type="button"
-          onClick={(event) => {
-            event.stopPropagation();
-            onToggleFavorite();
-          }}
-          aria-label="Toggle favorite"
-          title="Toggle favorite"
-        >
-          <Star size={17} />
-        </button>
-        <button className="icon-button" type="button" onClick={copy} aria-label="Copy short URL" title="Copy short URL">
-          <Copy size={17} />
-        </button>
-        <a
-          className="icon-button"
-          href={shortURL}
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Open short URL"
-          title="Open short URL"
-          onClick={(event) => event.stopPropagation()}
-        >
-          <ExternalLink size={17} />
-        </a>
-        <button className="icon-button danger" type="button" onClick={remove} aria-label="Delete short URL" title="Delete short URL">
-          <Trash2 size={17} />
-        </button>
-      </div>
-    </article>
+    <>
+      <article className={`url-row ${selected ? 'selected' : ''}`} onClick={onSelect}>
+        <div className="url-main">
+          <button className="link-title" type="button" onClick={onSelect}>
+            {item.short_code}
+          </button>
+          <span>{item.original_url}</span>
+        </div>
+        <div className="row-metrics">
+          <span className="click-chip">
+            <MousePointerClick size={15} />
+            {item.click_count}
+          </span>
+          <span>
+            <CalendarClock size={15} />
+            {formatDate(item.created_at)}
+          </span>
+          <span className={expired ? 'expired-chip' : 'active-chip'}>{expired ? 'Expired' : 'Active'}</span>
+        </div>
+        <div className="row-actions">
+          <button
+            className={`icon-button ${favorite ? 'favorite' : ''}`}
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onToggleFavorite();
+            }}
+            aria-label="Toggle favorite"
+            title="Toggle favorite"
+          >
+            <Star size={17} />
+          </button>
+          <button className="icon-button" type="button" onClick={copy} aria-label="Copy short URL" title="Copy short URL">
+            <Copy size={17} />
+          </button>
+          <a
+            className="icon-button"
+            href={shortURL}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Open short URL"
+            title="Open short URL"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <ExternalLink size={17} />
+          </a>
+          <button
+            className="icon-button danger"
+            type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              setShowDeleteDialog(true);
+            }}
+            aria-label="Delete short URL"
+            title="Delete short URL"
+          >
+            <Trash2 size={17} />
+          </button>
+        </div>
+      </article>
+      {showDeleteDialog && (
+        <DeleteLinkDialog shortCode={item.short_code} onCancel={() => setShowDeleteDialog(false)} onConfirm={remove} />
+      )}
+    </>
   );
 }
 
