@@ -43,6 +43,7 @@ import {
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Analytics, ShortURL, User, api, shortURLFor } from './api';
+import linkPulseLogo from './assets/link-pulse-logo.png';
 
 type AuthMode = 'login' | 'register';
 type Page = 'overview' | 'links' | 'analytics' | 'account';
@@ -193,7 +194,7 @@ export default function App() {
       <aside className="sidebar">
         <div className="brand">
           <span className="brand-mark">
-            <Link2 size={24} />
+            <img src={linkPulseLogo} alt="" />
           </span>
           <div>
             <strong>LinkPulse</strong>
@@ -836,7 +837,7 @@ function AuthScreen({
       <section className="auth-card">
         <div className="brand compact">
           <span className="brand-mark">
-            <Link2 size={22} />
+            <img src={linkPulseLogo} alt="" />
           </span>
           <div>
             <strong>LinkPulse</strong>
