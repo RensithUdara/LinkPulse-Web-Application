@@ -43,3 +43,14 @@ func (r *UserRepository) FindByID(id uuid.UUID) (*model.User, error) {
 	}
 	return &user, nil
 }
+
+func (r *UserRepository) UpdatePasswordHash(id uuid.UUID, passwordHash string) error {
+	result := r.db.Model(&model.User{}).Where("id = ?", id).Update("password_hash", passwordHash)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return ErrNotFound
+	}
+	return nil
+}
