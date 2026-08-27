@@ -5455,6 +5455,76 @@ body {
   }
 }
 
+/* Dashboard viewport lock: remove transform empty space and keep nav fixed */
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  overflow: hidden;
+}
+
+.app-shell {
+  transform: none !important;
+  transform-origin: initial !important;
+  width: 100% !important;
+  min-height: 100vh !important;
+  height: 100vh !important;
+  overflow: hidden !important;
+}
+
+.app-shell .sidebar {
+  position: sticky !important;
+  top: 0 !important;
+  height: 100vh !important;
+  min-height: 100vh !important;
+  overflow: hidden !important;
+}
+
+.app-shell .workspace {
+  height: 100vh !important;
+  min-height: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  padding-bottom: 28px !important;
+  scrollbar-width: thin;
+}
+
+.app-shell .workspace::after {
+  display: none !important;
+}
+
+@media (min-width: 1201px) {
+  .app-shell {
+    grid-template-columns: 220px minmax(0, 1fr);
+  }
+
+  .app-shell .sidebar {
+    width: 220px;
+  }
+}
+
+@media (max-width: 1200px) {
+  body {
+    overflow: auto;
+  }
+
+  .app-shell {
+    height: auto !important;
+    min-height: 100vh !important;
+    overflow: visible !important;
+  }
+
+  .app-shell .sidebar,
+  .app-shell .workspace {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+}
+
 /* Auth viewport lock: remove transform-created bottom gap */
 .auth-layout {
   transform: none !important;
