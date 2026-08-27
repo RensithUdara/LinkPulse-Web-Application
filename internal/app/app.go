@@ -78,6 +78,8 @@ func (s *Server) routes() *gin.Engine {
 
 		protected := api.Group("", middleware.Auth(authService))
 		{
+			protected.GET("/auth/me", authHandler.Me)
+			protected.PUT("/auth/password", authHandler.ChangePassword)
 			protected.POST("/urls", urlHandler.Create)
 			protected.GET("/urls", urlHandler.List)
 			protected.GET("/urls/:id", urlHandler.Get)
@@ -108,7 +110,7 @@ func cors(frontendOrigin string) gin.HandlerFunc {
 			c.Header("Access-Control-Allow-Origin", frontendOrigin)
 		}
 		c.Header("Vary", "Origin")
-		c.Header("Access-Control-Allow-Methods", "GET, POST, DELETE, OPTIONS")
+		c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
 		c.Header("Access-Control-Allow-Headers", "Authorization, Content-Type, Accept")
 		c.Header("Access-Control-Max-Age", "86400")
 
