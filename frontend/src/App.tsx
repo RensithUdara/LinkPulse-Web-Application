@@ -1413,32 +1413,6 @@ function MiniSparkline({ data }: { data: number[] }) {
   );
 }
 
-function GroupedBars({ title, data }: { title: string; data: { label: string; count: number }[] }) {
-  const rows = data.filter((item) => item.label);
-  const max = Math.max(1, ...rows.map((item) => item.count));
-
-  return (
-    <div className="bar-group">
-      <div className="mini-heading">
-        <span>{title}</span>
-      </div>
-      {rows.length === 0 ? (
-        <p className="empty-copy">No clicks yet</p>
-      ) : (
-        rows.slice(0, 5).map((item) => (
-          <div className="bar-row" key={`${title}-${item.label}`}>
-            <span>{item.label || 'unknown'}</span>
-            <div>
-              <i style={{ width: `${(item.count / max) * 100}%` }} />
-            </div>
-            <strong>{item.count}</strong>
-          </div>
-        ))
-      )}
-    </div>
-  );
-}
-
 function EmptyState() {
   return (
     <div className="empty-state">
