@@ -40,6 +40,22 @@ func TestValidAlias(t *testing.T) {
 	}
 }
 
+func TestStrongPassword(t *testing.T) {
+	tests := map[string]bool{
+		"abc12345":    true,
+		"Password1":   true,
+		"short1":      false,
+		"onlyletters": false,
+		"12345678":    false,
+	}
+
+	for password, want := range tests {
+		if got := StrongPassword(password); got != want {
+			t.Fatalf("StrongPassword(%q) = %v, want %v", password, got, want)
+		}
+	}
+}
+
 func containsRune(value string, needle rune) bool {
 	for _, char := range value {
 		if char == needle {
