@@ -5,6 +5,8 @@
 bin/
 dist/
 coverage.out
+node_modules/
+frontend/dist/
 
 *.exe
 *.test
