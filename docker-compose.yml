@@ -1,0 +1,47 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      BASE_URL: http://localhost:8080
+      DATABASE_URL: postgres://urlshortener:password@postgres:5432/urlshortener?sslmode=disable
+      REDIS_ADDR: redis:6379
+      JWT_SECRET: replace-with-a-long-random-secret
+      CACHE_TTL_SECONDS: 3600
+      RATE_LIMIT_PER_MIN: 120
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: urlshortener
+      POSTGRES_USER: urlshortener
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U urlshortener -d urlshortener"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  postgres_data:
