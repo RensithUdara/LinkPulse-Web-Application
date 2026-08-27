@@ -17,6 +17,7 @@ import (
 var (
 	ErrInvalidCredentials = errors.New("invalid credentials")
 	ErrEmailTaken         = errors.New("email already registered")
+	ErrWeakPassword       = errors.New("password must be at least 8 characters and include a letter and a number")
 )
 
 type AuthService struct {
@@ -36,8 +37,11 @@ func NewAuthService(users *repository.UserRepository, jwtSecret string) *AuthSer
 
 func (s *AuthService) Register(email, password string) (*model.User, string, error) {
 	email = strings.ToLower(strings.TrimSpace(email))
-	if email == "" || len(password) < 8 {
-		return nil, "", fmt.Errorf("email and password with at least 8 characters are required")
+	if email == "" {
+		return nil, "", fmt.Errorf("email is required")
+	}
+	if !StrongPassword(password) {
+		return nil, "", ErrWeakPassword
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -70,6 +74,39 @@ func (s *AuthService) Login(email, password string) (*model.User, string, error)
 	return user, token, err
 }
 
+func (s *AuthService) Me(userID uuid.UUID) (*model.User, error) {
+	user, err := s.users.FindByID(userID)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return nil, ErrInvalidCredentials
+		}
+		return nil, err
+	}
+	return user, nil
+}
+
+func (s *AuthService) ChangePassword(userID uuid.UUID, currentPassword, newPassword string) error {
+	user, err := s.users.FindByID(userID)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return ErrInvalidCredentials
+		}
+		return err
+	}
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(currentPassword)); err != nil {
+		return ErrInvalidCredentials
+	}
+	if !StrongPassword(newPassword) {
+		return ErrWeakPassword
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	return s.users.UpdatePasswordHash(userID, string(hash))
+}
+
 func (s *AuthService) ParseToken(tokenString string) (*Claims, error) {
 	claims := &Claims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
@@ -98,4 +135,22 @@ func (s *AuthService) issueToken(user *model.User) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(s.jwtSecret)
+}
+
+func StrongPassword(password string) bool {
+	if len(password) < 8 {
+		return false
+	}
+
+	hasLetter := false
+	hasNumber := false
+	for _, char := range password {
+		if (char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z') {
+			hasLetter = true
+		}
+		if char >= '0' && char <= '9' {
+			hasNumber = true
+		}
+	}
+	return hasLetter && hasNumber
 }
