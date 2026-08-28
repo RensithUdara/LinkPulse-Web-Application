@@ -5594,3 +5594,439 @@ body {
     width: min(680px, 100%) !important;
   }
 }
+
+/* Professional visual upgrade */
+:root {
+  --ink: #071335;
+  --muted: #52648c;
+  --line: #d8e3f4;
+  --surface: #edf5ff;
+  --panel: rgba(255, 255, 255, 0.94);
+  --blue: #1467ff;
+  --cyan: #03b9d8;
+  --green: #0fbf83;
+  --amber: #ffac2f;
+  --rose: #ff3f69;
+  --violet: #7a3cff;
+  --navy: #081333;
+  --shadow: 0 24px 70px rgba(15, 35, 73, 0.14);
+  --shadow-soft: 0 14px 34px rgba(15, 35, 73, 0.1);
+  --radius: 12px;
+}
+
+body {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(20, 103, 255, 0.12), transparent 30%),
+    radial-gradient(circle at 88% 22%, rgba(122, 60, 255, 0.14), transparent 28%),
+    linear-gradient(180deg, #f8fbff 0%, #edf5ff 54%, #eaf2ff 100%);
+  color: var(--ink);
+}
+
+.sidebar {
+  background:
+    radial-gradient(circle at 28% 16%, rgba(71, 119, 255, 0.34), transparent 25%),
+    linear-gradient(180deg, #081333 0%, #111a46 52%, #007a91 100%) !important;
+  box-shadow: 20px 0 55px rgba(5, 16, 42, 0.25);
+}
+
+.brand-mark,
+.brand-mark img,
+.auth-brand img,
+.auth-card-logo {
+  border-radius: 12px;
+}
+
+.brand strong,
+.auth-brand strong {
+  font-weight: 950;
+  letter-spacing: 0;
+}
+
+.nav-item {
+  min-height: 54px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.nav-item.active,
+.nav-item:hover {
+  background: linear-gradient(135deg, #1973ff 0%, #7b35ff 100%);
+  box-shadow: 0 16px 34px rgba(34, 91, 255, 0.3);
+}
+
+.workspace {
+  max-width: none;
+  padding: 24px 32px 34px !important;
+}
+
+.command-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  margin: -24px -32px 24px;
+  padding: 18px 32px;
+  border-bottom: 1px solid rgba(200, 214, 235, 0.84);
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 14px 36px rgba(16, 32, 72, 0.08);
+  backdrop-filter: blur(18px);
+}
+
+.global-search {
+  max-width: 620px;
+}
+
+.global-search input,
+.search-box input,
+.analytics-search input,
+.auth-input-shell,
+.input-shell,
+input,
+select {
+  border-color: #cbd8ee;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 10px 26px rgba(22, 45, 92, 0.05);
+}
+
+.page-header {
+  min-height: 150px;
+  border: 1px solid rgba(255, 255, 255, 0.94);
+  border-radius: 14px;
+  background:
+    linear-gradient(100deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 250, 255, 0.94) 62%, rgba(226, 234, 255, 0.92) 100%);
+  box-shadow: var(--shadow-soft);
+}
+
+.page-header h1 {
+  margin: 0;
+  color: #071335;
+  font-size: clamp(36px, 3.2vw, 52px);
+  font-weight: 950;
+  line-height: 0.95;
+  letter-spacing: 0;
+}
+
+.page-header p:not(.eyebrow) {
+  color: #566996;
+  font-size: 18px;
+  font-weight: 650;
+}
+
+.eyebrow {
+  color: #506aa0;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+}
+
+.hero-panel {
+  min-height: 280px;
+  border-radius: 14px;
+  background:
+    linear-gradient(112deg, #1467ff 0%, #288cff 40%, #5e68ff 72%, #8644ff 100%);
+  box-shadow: 0 28px 70px rgba(30, 86, 255, 0.28);
+}
+
+.hero-panel::before {
+  opacity: 0.4;
+}
+
+.hero-copy h2 {
+  max-width: 760px;
+  font-size: clamp(42px, 4.2vw, 66px);
+  font-weight: 950;
+  line-height: 0.96;
+  letter-spacing: 0;
+}
+
+.hero-copy p:not(.eyebrow) {
+  max-width: 720px;
+  color: rgba(255, 255, 255, 0.94);
+  font-size: 19px;
+  font-weight: 650;
+}
+
+.panel,
+.metric-card,
+.create-panel,
+.auth-form-card {
+  border: 1px solid rgba(207, 220, 240, 0.78);
+  border-radius: 14px;
+  background: var(--panel);
+  box-shadow: var(--shadow-soft);
+}
+
+.panel:hover,
+.metric-card:hover,
+.create-panel:hover {
+  box-shadow: 0 24px 60px rgba(15, 35, 73, 0.14);
+}
+
+.panel-heading {
+  padding: 22px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(246, 250, 255, 0.96));
+}
+
+.panel-heading h2,
+.create-heading h2,
+.auth-form-heading h3,
+.account-section-heading h2 {
+  color: #071335;
+  font-weight: 950;
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+
+.panel-heading h2,
+.create-heading h2,
+.account-section-heading h2 {
+  font-size: 24px;
+}
+
+.panel-heading.vibrant {
+  background:
+    radial-gradient(circle at 82% 0%, rgba(0, 185, 216, 0.62), transparent 38%),
+    linear-gradient(135deg, #09153a 0%, #15215b 48%, #00899a 100%);
+}
+
+.metric-card {
+  min-height: 96px;
+  padding: 20px;
+}
+
+.metric-card > span,
+.create-heading > span,
+.account-section-heading > span {
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
+  box-shadow: 0 16px 30px rgba(38, 87, 255, 0.22);
+}
+
+.metric-card p {
+  color: #63749a;
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.metric-card strong {
+  color: #071335;
+  font-size: 34px;
+  font-weight: 950;
+}
+
+.primary-button {
+  min-height: 46px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #1473ff 0%, #00a9d8 48%, #793cff 100%);
+  box-shadow: 0 16px 34px rgba(33, 100, 255, 0.28);
+  font-weight: 950;
+}
+
+.ghost-button,
+.soft-button,
+.icon-button,
+.segmented button,
+.user-chip {
+  border-radius: 12px;
+  font-weight: 900;
+}
+
+.ghost-button {
+  border: 1px solid #cfdbef;
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.danger-lite {
+  border-color: #ffd1dc !important;
+  color: #ff2e57 !important;
+  background: #fff4f7 !important;
+}
+
+.user-chip {
+  border: 1px solid #cfdbef;
+  background: #ffffff;
+  box-shadow: 0 12px 28px rgba(16, 32, 72, 0.08);
+}
+
+.avatar,
+.profile-avatar {
+  background: linear-gradient(135deg, #1473ff 0%, #8644ff 100%);
+  box-shadow: 0 14px 32px rgba(44, 95, 255, 0.3);
+  font-weight: 950;
+}
+
+.url-row {
+  min-height: 88px;
+  padding: 18px 22px;
+}
+
+.url-row.selected {
+  background:
+    linear-gradient(90deg, rgba(0, 185, 216, 0.14), rgba(20, 103, 255, 0.07)),
+    #ffffff;
+  box-shadow: inset 5px 0 0 #1473ff;
+}
+
+.link-title,
+.mini-link-list button span,
+.compact-link strong {
+  color: #075fff;
+  font-size: 19px;
+  font-weight: 950;
+}
+
+.row-metrics span,
+.active-chip,
+.expired-chip,
+.compact-link em {
+  border-radius: 999px;
+  font-weight: 950;
+}
+
+.stats-grid {
+  gap: 16px;
+}
+
+.stat {
+  min-height: 88px;
+  border-radius: 12px;
+}
+
+.stat strong {
+  font-size: 34px;
+  font-weight: 950;
+}
+
+.timeline-chart {
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(244, 249, 255, 0.94));
+}
+
+.chart-line {
+  stroke-width: 4;
+}
+
+.chart-point {
+  filter: drop-shadow(0 4px 8px rgba(85, 54, 255, 0.28));
+}
+
+.analytics-breakdown-row {
+  min-height: 70px;
+  border-radius: 10px;
+}
+
+.analytics-breakdown-row strong {
+  color: #071335;
+  font-size: 18px;
+  font-weight: 950;
+}
+
+.breakdown-icon {
+  border-radius: 12px;
+  color: #11255c;
+  background: #eef5ff;
+}
+
+.auth-layout {
+  background: #eef5ff;
+}
+
+.auth-visual {
+  background:
+    radial-gradient(ellipse at 18% 0%, rgba(255, 255, 255, 0.18), transparent 31%),
+    linear-gradient(135deg, #165cff 0%, #1199f5 52%, #8845ff 100%) !important;
+}
+
+.auth-brand strong {
+  font-size: 34px;
+}
+
+.auth-brand span {
+  font-size: 20px;
+}
+
+.auth-copy h1 {
+  max-width: 620px;
+  color: #ffffff;
+  font-size: clamp(50px, 4.8vw, 76px);
+  font-weight: 950;
+  line-height: 0.96;
+  letter-spacing: 0;
+}
+
+.auth-copy mark {
+  color: #74efff;
+  font-weight: 950;
+}
+
+.auth-copy p {
+  max-width: 660px;
+  font-weight: 650;
+}
+
+.auth-feature strong {
+  font-weight: 950;
+}
+
+.auth-form-card {
+  padding: 28px 34px;
+}
+
+.auth-form-heading h3 {
+  font-size: 32px;
+}
+
+.auth-card-title {
+  color: #071335;
+  font-weight: 950;
+}
+
+.auth-card-title span {
+  color: #1467ff;
+}
+
+.auth-submit {
+  min-height: 58px;
+  font-size: 19px;
+}
+
+.secure-banner {
+  border-radius: 12px;
+  background: linear-gradient(135deg, #edf5ff, #f7fbff);
+}
+
+.profile-email-card,
+.backend-card {
+  border-radius: 14px;
+}
+
+.profile-logout-button,
+.danger-button {
+  border-radius: 12px;
+  font-weight: 950;
+}
+
+@media (min-width: 1201px) {
+  .overview-grid,
+  .split-page {
+    grid-template-columns: minmax(0, 1.9fr) minmax(360px, 0.7fr);
+  }
+
+  .analytics-page {
+    grid-template-columns: 300px minmax(0, 1fr);
+  }
+
+  .analytics-main {
+    grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.8fr);
+  }
+
+  .account-page {
+    grid-template-columns: minmax(0, 1fr) minmax(420px, 0.95fr);
+  }
+}
