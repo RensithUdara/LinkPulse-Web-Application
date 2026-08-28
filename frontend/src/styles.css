@@ -7238,3 +7238,234 @@ select,
 .hero-actions .soft-button:hover {
   transform: translateY(-1px);
 }
+
+/* 3D container depth and subtle effects */
+.panel,
+.metric-card,
+.create-panel,
+.page-header,
+.command-bar,
+.auth-form-card,
+.detail-panel,
+.analytics-panel,
+.profile-info-panel,
+.account-panel {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.98) 0%, rgba(246, 250, 255, 0.96) 58%, rgba(236, 244, 255, 0.94) 100%) !important;
+  border-top-color: rgba(255, 255, 255, 0.98) !important;
+  border-left-color: rgba(255, 255, 255, 0.96) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.95) inset,
+    0 -1px 0 rgba(178, 197, 226, 0.42) inset,
+    0 18px 42px rgba(12, 30, 68, 0.1),
+    0 4px 12px rgba(12, 30, 68, 0.06) !important;
+  transform: translateZ(0);
+  transition:
+    transform 180ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+}
+
+.panel::before,
+.metric-card::before,
+.create-panel::before,
+.page-header::before,
+.command-bar::before,
+.auth-form-card::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(120deg, rgba(255, 255, 255, 0.62), transparent 34%),
+    radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.85), transparent 32%);
+  content: "";
+  opacity: 0.72;
+}
+
+.panel::after,
+.metric-card::after,
+.create-panel::after,
+.page-header::after,
+.command-bar::after,
+.auth-form-card::after {
+  position: absolute;
+  inset: 1px;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.55), transparent 46%),
+    linear-gradient(315deg, rgba(23, 107, 255, 0.05), transparent 42%);
+  content: "";
+}
+
+.panel:hover,
+.metric-card:hover,
+.create-panel:hover,
+.page-header:hover,
+.auth-form-card:hover {
+  border-color: rgba(174, 194, 226, 0.95) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.96) inset,
+    0 -1px 0 rgba(156, 178, 214, 0.5) inset,
+    0 24px 54px rgba(12, 30, 68, 0.14),
+    0 8px 18px rgba(12, 30, 68, 0.08) !important;
+  transform: translateY(-2px);
+}
+
+.metric-card:hover {
+  transform: translateY(-3px) scale(1.006);
+}
+
+.hero-panel {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  box-shadow:
+    0 2px 0 rgba(255, 255, 255, 0.2) inset,
+    0 -2px 0 rgba(25, 42, 150, 0.18) inset,
+    0 30px 70px rgba(23, 107, 255, 0.28),
+    0 10px 22px rgba(6, 19, 58, 0.12) !important;
+}
+
+.hero-panel::after {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.18), transparent 28%),
+    radial-gradient(circle at 25% 0%, rgba(255, 255, 255, 0.16), transparent 32%);
+  content: "";
+}
+
+.hero-link-tile,
+.hero-feature-chip,
+.brand-mark,
+.metric-card > span,
+.create-heading > span,
+.account-section-heading > span,
+.profile-avatar,
+.avatar {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.72) inset,
+    0 -1px 0 rgba(0, 0, 0, 0.1) inset,
+    0 14px 28px rgba(10, 28, 72, 0.18) !important;
+  transform: translateZ(0);
+}
+
+.hero-link-tile {
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+.hero-panel:hover .hero-link-tile {
+  transform: rotate(7deg) translateY(-4px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.82) inset,
+    0 22px 36px rgba(10, 28, 72, 0.22) !important;
+}
+
+.ghost-button,
+.primary-button,
+.soft-button,
+.icon-button,
+.user-chip,
+.segmented button,
+.auth-input-shell,
+.input-shell,
+input,
+select {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.9) inset,
+    0 -1px 0 rgba(168, 187, 219, 0.32) inset,
+    0 8px 18px rgba(12, 30, 68, 0.06) !important;
+}
+
+.primary-button,
+.nav-item.active {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.28) inset,
+    0 -1px 0 rgba(6, 19, 58, 0.18) inset,
+    0 16px 32px rgba(23, 107, 255, 0.28) !important;
+}
+
+.primary-button:hover,
+.ghost-button:hover,
+.soft-button:hover,
+.icon-button:hover,
+.user-chip:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.95) inset,
+    0 -1px 0 rgba(154, 176, 214, 0.4) inset,
+    0 14px 28px rgba(12, 30, 68, 0.1) !important;
+}
+
+.url-row,
+.compact-link,
+.mini-link-list button,
+.analytics-breakdown-row,
+.detail-list div,
+.profile-email-card,
+.backend-card {
+  transition:
+    transform 160ms ease,
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.url-row:hover,
+.compact-link:hover,
+.mini-link-list button:hover,
+.analytics-breakdown-row:hover {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(238, 246, 255, 0.92)) !important;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.82) inset,
+    0 10px 24px rgba(12, 30, 68, 0.08);
+  transform: translateY(-1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .metric-card,
+  .create-panel,
+  .page-header,
+  .command-bar,
+  .auth-form-card,
+  .ghost-button,
+  .primary-button,
+  .soft-button,
+  .icon-button,
+  .user-chip,
+  .url-row,
+  .compact-link,
+  .mini-link-list button,
+  .analytics-breakdown-row,
+  .hero-link-tile {
+    transition: none !important;
+  }
+
+  .panel:hover,
+  .metric-card:hover,
+  .create-panel:hover,
+  .page-header:hover,
+  .auth-form-card:hover,
+  .primary-button:hover,
+  .ghost-button:hover,
+  .soft-button:hover,
+  .icon-button:hover,
+  .user-chip:hover,
+  .url-row:hover,
+  .compact-link:hover,
+  .mini-link-list button:hover,
+  .analytics-breakdown-row:hover,
+  .hero-panel:hover .hero-link-tile {
+    transform: none !important;
+  }
+}
