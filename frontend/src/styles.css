@@ -7210,3 +7210,31 @@ select,
 .analytics-selector .mini-link-list button .analytics-link-copy em {
   font-weight: 650 !important;
 }
+
+/* Hero action buttons need strong contrast on blue background */
+.hero-actions .primary-button {
+  color: #075fff !important;
+  background: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.92) !important;
+  box-shadow: 0 14px 30px rgba(5, 18, 54, 0.16) !important;
+}
+
+.hero-actions .primary-button svg {
+  color: #075fff !important;
+}
+
+.hero-actions .soft-button {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  border: 1px solid rgba(255, 255, 255, 0.72) !important;
+  box-shadow: none !important;
+}
+
+.hero-actions .soft-button svg {
+  color: #ffffff !important;
+}
+
+.hero-actions .primary-button:hover,
+.hero-actions .soft-button:hover {
+  transform: translateY(-1px);
+}
