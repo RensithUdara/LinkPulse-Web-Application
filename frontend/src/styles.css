@@ -7211,6 +7211,20 @@ select,
   font-weight: 650 !important;
 }
 
+/* Circular LinkPulse logo treatment */
+.brand-mark,
+.brand-mark img,
+.auth-brand img,
+.auth-card-logo {
+  border-radius: 50% !important;
+}
+
+.brand-mark,
+.auth-brand img,
+.auth-card-logo {
+  overflow: hidden;
+}
+
 /* Hero action buttons need strong contrast on blue background */
 .hero-actions .primary-button {
   color: #075fff !important;
