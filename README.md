@@ -17,8 +17,6 @@
 
 **LinkPulse** is a full-stack URL shortener web application built with a Go backend and a React frontend. It lets users create short links, manage custom aliases, generate QR codes, track clicks, inspect analytics, and manage their account from a modern dashboard.
 
-This project is designed as a portfolio-ready full-stack application with real backend APIs, database persistence, JWT authentication, frontend state, and analytics tracking.
-
 ---
 
 ## 🚀 Features
