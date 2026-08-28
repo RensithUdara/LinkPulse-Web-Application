@@ -1,5 +1,3 @@
-.env
-.env.*
 !.env.example
 
 bin/
@@ -10,3 +8,4 @@ frontend/dist/
 
 *.exe
 *.test
+config.bat
