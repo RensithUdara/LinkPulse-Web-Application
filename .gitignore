@@ -10,3 +10,5 @@ frontend/dist/
 
 *.exe
 *.test
+.env.local
+.env.production
