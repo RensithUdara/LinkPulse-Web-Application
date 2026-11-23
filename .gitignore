@@ -8,4 +8,7 @@ frontend/dist/
 
 *.exe
 *.test
-config.bat
+.env
+.env.example
+.env.local
+.env.production
